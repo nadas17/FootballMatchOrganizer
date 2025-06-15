@@ -1,6 +1,10 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
@@ -37,19 +41,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -99,5 +96,184 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Custom Font Classes */
+.font-orbitron {
+  font-family: 'Orbitron', monospace;
+}
+
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Liquid Glass Effects */
+.glass-card {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  box-shadow: 
+    0 8px 32px 0 rgba(31, 38, 135, 0.37),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-input {
+  @apply bg-white/5 backdrop-blur-sm border border-white/20 text-white placeholder-white/50;
+  @apply focus:border-emerald-400/50 focus:ring-2 focus:ring-emerald-400/20;
+}
+
+/* Custom Animations */
+@keyframes gradient-x {
+  0%, 100% {
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: right center;
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-12deg);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s ease infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 1.5s infinite;
+}
+
+.animate-shine {
+  animation: shine 1s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
+}
+
+/* Countdown Styling */
+.countdown-unit {
+  @apply text-center;
+}
+
+.countdown-number {
+  @apply text-3xl font-bold bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent;
+  @apply p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 mb-2;
+  font-family: 'Orbitron', monospace;
+}
+
+.countdown-label {
+  @apply text-xs text-white/60 uppercase tracking-wider font-semibold;
+}
+
+/* Gradient Radial Utility */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-black/20;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-emerald-500/50 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-emerald-500/70;
+}
+
+/* Stadium Atmosphere Effects */
+.stadium-lights {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.stadium-lights::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 20%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 255, 0, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+.stadium-lights::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  right: 25%;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: pulse-slow 3s ease-in-out infinite reverse;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .countdown-number {
+    @apply text-2xl p-2;
+  }
+  
+  .glass-card {
+    @apply p-4;
   }
 }
