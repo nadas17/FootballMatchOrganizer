@@ -9,6 +9,7 @@ import CountdownTimer from "@/components/CountdownTimer";
 import CreateMatchButton from "@/components/CreateMatchButton";
 import JoinMatchForm from "@/components/JoinMatchForm";
 import { supabase } from "@/integrations/supabase/client";
+
 interface Match {
   id: string;
   title: string;
@@ -27,6 +28,7 @@ interface Match {
     team: string;
   }>;
 }
+
 const Index = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
@@ -42,19 +44,18 @@ const Index = () => {
       setLoading(true);
 
       // Fetch matches
-      const {
-        data: matchesData,
-        error: matchesError
-      } = await supabase.from('matches').select('*').order('match_date', {
-        ascending: true
-      });
+      const { data: matchesData, error: matchesError } = await supabase
+        .from('matches')
+        .select('*')
+        .order('match_date', { ascending: true });
+      
       if (matchesError) throw matchesError;
 
       // Fetch participants for each match
-      const {
-        data: participantsData,
-        error: participantsError
-      } = await supabase.from('match_participants').select('*');
+      const { data: participantsData, error: participantsError } = await supabase
+        .from('match_participants')
+        .select('*');
+      
       if (participantsError) throw participantsError;
 
       // Combine matches with their participants
@@ -62,6 +63,7 @@ const Index = () => {
         ...match,
         participants: participantsData?.filter(p => p.match_id === match.id) || []
       })) || [];
+
       setMatches(matchesWithParticipants);
     } catch (error) {
       console.error('Error fetching matches:', error);
@@ -77,23 +79,24 @@ const Index = () => {
   const handleJoinMatch = async (matchId: string, playerName: string, team: string) => {
     try {
       // Insert new participant
-      const {
-        error
-      } = await supabase.from('match_participants').insert({
-        match_id: matchId,
-        participant_name: playerName,
-        team: team
-      });
+      const { error } = await supabase
+        .from('match_participants')
+        .insert({
+          match_id: matchId,
+          participant_name: playerName,
+          team: team
+        });
+      
       if (error) throw error;
 
       // Update current_players count
       const match = matches.find(m => m.id === matchId);
       if (match) {
-        const {
-          error: updateError
-        } = await supabase.from('matches').update({
-          current_players: match.current_players + 1
-        }).eq('id', matchId);
+        const { error: updateError } = await supabase
+          .from('matches')
+          .update({ current_players: match.current_players + 1 })
+          .eq('id', matchId);
+        
         if (updateError) throw updateError;
       }
 
