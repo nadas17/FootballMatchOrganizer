@@ -67,13 +67,24 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick }
           
           <div className="flex items-center gap-2 text-white/80">
             <MapPin className="w-4 h-4 text-orange-400" />
-            <span className="text-sm truncate">{match.location || 'TBD'}</span>
+            {match.location_lat && match.location_lng ? (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${match.location_lat},${match.location_lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm truncate hover:text-orange-300 transition-colors"
+              >
+                {match.location || 'View on Map'}
+              </a>
+            ) : (
+              <span className="text-sm truncate">{match.location || 'TBD'}</span>
+            )}
           </div>
           
           <div className="flex items-center gap-2 text-white/80">
             <div className="text-yellow-400 font-bold text-sm">zł</div>
             <span className="text-sm">
-              {match.price_per_player ? `${match.price_per_player} PLN` : 'Free'}
+              {match.price_per_player !== null ? match.price_per_player : 'Free'}
             </span>
           </div>
         </div>
