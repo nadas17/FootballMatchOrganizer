@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, Users, Euro, ChevronDown, ChevronUp, Calendar } from "lucide-react";
 
 interface Match {
-  id: number;
+  id: string;
   title: string;
   match_date: string;
   match_time: string;
@@ -17,7 +18,7 @@ interface Match {
   max_players: number;
   current_players: number;
   participants: Array<{
-    id: number;
+    id: string;
     participant_name: string;
     team: string;
   }>;
@@ -88,7 +89,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick }
           <div className="flex items-center gap-2 text-white/80">
             <Euro className="w-4 h-4 text-yellow-400" />
             <span className="text-sm">
-              {match.price_per_player ? `${match.price_per_player} PLN` : 'Free'}
+              {match.price_per_player ? `${match.price_per_player} TL` : 'Free'}
             </span>
           </div>
         </div>

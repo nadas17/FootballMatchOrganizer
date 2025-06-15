@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label";
 import { X, Users } from "lucide-react";
 
 interface JoinMatchFormProps {
-  matchId: number;
-  onJoin: (matchId: number, playerName: string, team: string) => void;
+  matchId: string;
+  onJoin: (matchId: string, playerName: string, team: string) => void;
   onCancel: () => void;
 }
 
