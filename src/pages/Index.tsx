@@ -85,13 +85,13 @@ const Index = () => {
     <div className="min-h-screen relative overflow-hidden">
       {/* Stadium Background Image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-contain bg-center bg-no-repeat"
         style={{
           backgroundImage: `url('/lovable-uploads/0fd39a8d-c556-4aef-b409-28418264a43f.png')`
         }}
       >
         {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]"></div>
       </div>
 
       {/* Stadium Lights Effect */}
@@ -211,8 +211,16 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Football floating animation */}
-      <div className="fixed bottom-10 right-10 w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-full animate-bounce shadow-2xl flex items-center justify-center text-2xl">
+      {/* Enhanced Football floating animation - brought to foreground */}
+      <div className="fixed bottom-10 right-10 w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-full animate-bounce shadow-2xl flex items-center justify-center text-3xl z-50 hover:scale-110 transition-transform cursor-pointer">
+        ⚽
+      </div>
+      
+      {/* Additional floating footballs for more dynamic effect */}
+      <div className="fixed top-20 left-10 w-12 h-12 bg-gradient-to-br from-orange-300 to-red-400 rounded-full animate-pulse shadow-lg flex items-center justify-center text-xl z-40 opacity-70">
+        ⚽
+      </div>
+      <div className="fixed bottom-1/3 left-20 w-8 h-8 bg-gradient-to-br from-orange-200 to-red-300 rounded-full animate-bounce shadow-md flex items-center justify-center text-sm z-30 opacity-50 animation-delay-500">
         ⚽
       </div>
     </div>
