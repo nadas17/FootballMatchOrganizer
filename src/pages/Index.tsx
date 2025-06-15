@@ -1,9 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Clock, Users, Euro, Calendar } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { MapPin, Clock, Users, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import MatchCard from "@/components/MatchCard";
 import CountdownTimer from "@/components/CountdownTimer";
@@ -11,6 +9,7 @@ import CreateMatchButton from "@/components/CreateMatchButton";
 import JoinMatchForm from "@/components/JoinMatchForm";
 import { supabase } from "@/integrations/supabase/client";
 import { MatchData } from "@/types/match";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const Index = () => {
   const [matches, setMatches] = useState<MatchData[]>([]);
@@ -148,11 +147,23 @@ const Index = () => {
     }
   };
 
-  const nextMatch = matches.filter(m => {
-    if (!m.match_date || !m.match_time) return false;
-    const matchDateTime = new Date(`${m.match_date}T${m.match_time}`);
-    return matchDateTime > new Date();
-  })[0]; // Take the first one since they're already sorted
+  const now = new Date();
+  const getMatchDateTime = (match: MatchData) => {
+    if (!match.match_date || !match.match_time) return null;
+    return new Date(`${match.match_date}T${match.match_time}`);
+  };
+
+  const upcomingMatches = matches.filter(m => {
+    const matchDateTime = getMatchDateTime(m);
+    return matchDateTime ? matchDateTime > now : false;
+  });
+
+  const pastMatches = matches.filter(m => {
+    const matchDateTime = getMatchDateTime(m);
+    return !matchDateTime || matchDateTime <= now;
+  });
+
+  const nextMatch = upcomingMatches[0];
 
   if (loading) {
     return (
@@ -190,32 +201,34 @@ const Index = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Live Matches Section */}
-            <Card className="glass-card border-none shadow-2xl">
-              <CardHeader>
-                <CardTitle className="text-2xl font-orbitron text-white flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                  Live Matches
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {matches.length > 0 ? (
-                  matches.map(match => (
-                    <MatchCard 
-                      key={match.id} 
-                      match={match} 
-                      isNextMatch={nextMatch?.id === match.id} 
-                      onJoinClick={() => setSelectedMatch(match.id)} 
-                    />
-                  ))
-                ) : (
-                  <div className="text-center text-white/70 py-8">
-                    <p>No matches available at the moment.</p>
-                    <p className="text-sm mt-2">Be the first to create a match!</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {/* Upcoming Matches Section */}
+            <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+              <Card className="glass-card border-none shadow-2xl">
+                <CardHeader>
+                  <CardTitle className="text-2xl font-orbitron text-white flex items-center gap-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    Upcoming Matches
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {upcomingMatches.length > 0 ? (
+                    upcomingMatches.map(match => (
+                      <MatchCard 
+                        key={match.id} 
+                        match={match} 
+                        isNextMatch={nextMatch?.id === match.id} 
+                        onJoinClick={() => setSelectedMatch(match.id)} 
+                      />
+                    ))
+                  ) : (
+                    <div className="text-center text-white/70 py-8">
+                      <p>No upcoming matches available.</p>
+                      <p className="text-sm mt-2">Be the first to create one!</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Join Match Form */}
             {selectedMatch && (
@@ -225,63 +238,67 @@ const Index = () => {
                 onCancel={() => setSelectedMatch(null)} 
               />
             )}
+
+            {/* Past Matches Section */}
+            {pastMatches.length > 0 && (
+              <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
+                <Card className="glass-card border-none shadow-2xl">
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="item-1" className="border-none">
+                      <AccordionTrigger className="p-6 hover:no-underline w-full flex justify-between items-center">
+                        <h3 className="text-2xl font-orbitron text-white">Match Archive</h3>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-6 pb-6 space-y-4">
+                        {pastMatches.map(match => (
+                          <MatchCard 
+                            key={match.id} 
+                            match={match} 
+                            onJoinClick={() => {}}
+                            isArchived={true}
+                          />
+                        ))}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </Card>
+              </div>
+            )}
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Countdown Timer */}
-            {nextMatch && <CountdownTimer match={nextMatch as any} />}
-
-            {/* Quick Stats */}
-            <Card className="glass-card border-none shadow-2xl">
-              <CardHeader>
-                <CardTitle className="text-xl font-orbitron text-white">Match Stats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-white/70">Active Matches</span>
-                  <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
-                    {matches.length}
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-white/70">Total Players</span>
-                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-                    {matches.reduce((acc, match) => acc + match.current_players, 0)}
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-white/70">Available Spots</span>
-                  <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">
-                    {matches.reduce((acc, match) => acc + ((match.max_players || 0) - match.current_players), 0)}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
+            {nextMatch && (
+              <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
+                <CountdownTimer match={nextMatch} />
+              </div>
+            )}
 
             {/* Weather Widget */}
-            <Card className="glass-card border-none shadow-2xl">
-              <CardHeader>
-                <CardTitle className="text-xl font-orbitron text-white">Playing Conditions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center">
-                  <div className="text-4xl mb-2">⛅</div>
-                  <div className="text-2xl font-bold text-white">18°C</div>
-                  <div className="text-white/70">Perfect for football!</div>
-                  <div className="mt-4 space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-white/70">Wind</span>
-                      <span className="text-white">12 km/h</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white/70">Humidity</span>
-                      <span className="text-white">65%</span>
+            <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
+              <Card className="glass-card border-none shadow-2xl">
+                <CardHeader>
+                  <CardTitle className="text-xl font-orbitron text-white">Playing Conditions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center">
+                    <div className="text-4xl mb-2">⛅</div>
+                    <div className="text-2xl font-bold text-white">18°C</div>
+                    <div className="text-white/70">Perfect for football!</div>
+                    <div className="mt-4 space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-white/70">Wind</span>
+                        <span className="text-white">12 km/h</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-white/70">Humidity</span>
+                        <span className="text-white">65%</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
@@ -290,4 +307,3 @@ const Index = () => {
 };
 
 export default Index;
-

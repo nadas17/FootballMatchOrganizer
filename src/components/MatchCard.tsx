@@ -10,9 +10,10 @@ interface MatchCardProps {
   match: MatchData;
   isNextMatch?: boolean;
   onJoinClick: () => void;
+  isArchived?: boolean;
 }
 
-const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick }) => {
+const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick, isArchived }) => {
   const [showParticipants, setShowParticipants] = useState(false);
   const isFull = match.current_players >= (match.max_players || 0);
   
@@ -22,7 +23,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick }
   return (
     <Card className={`glass-card border-none shadow-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl ${
       isNextMatch ? 'ring-2 ring-emerald-400/50 animate-pulse-slow' : ''
-    }`}>
+    } ${isArchived ? 'opacity-60' : ''}`}>
       <CardContent className="p-6">
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
@@ -111,7 +112,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick }
             )}
           </Button>
           
-          {!isNextMatch && (
+          {!isNextMatch && !isArchived && (
             <Button
               onClick={onJoinClick}
               disabled={isFull}
@@ -123,6 +124,11 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick }
             >
               {isFull ? 'Match Full' : 'Join Match'}
             </Button>
+          )}
+          {isArchived && (
+            <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">
+              ARCHIVED
+            </Badge>
           )}
         </div>
 
