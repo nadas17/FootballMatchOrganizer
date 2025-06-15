@@ -9,25 +9,7 @@ import CountdownTimer from "@/components/CountdownTimer";
 import CreateMatchButton from "@/components/CreateMatchButton";
 import JoinMatchForm from "@/components/JoinMatchForm";
 import { supabase } from "@/integrations/supabase/client";
-
-interface Match {
-  id: string;
-  title: string;
-  match_date: string;
-  match_time: string;
-  location: string;
-  location_lat?: number;
-  location_lng?: number;
-  description: string;
-  price_per_player: number | null;
-  max_players: number;
-  current_players: number;
-  participants: Array<{
-    id: string;
-    participant_name: string;
-    team: string;
-  }>;
-}
+import { Match } from "@/types/match";
 
 const Index = () => {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -169,15 +151,32 @@ const Index = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {matches.length > 0 ? matches.map(match => <MatchCard key={match.id} match={match} isNextMatch={nextMatch?.id === match.id} onJoinClick={() => setSelectedMatch(match.id)} />) : <div className="text-center text-white/70 py-8">
+                {matches.length > 0 ? (
+                  matches.map(match => (
+                    <MatchCard 
+                      key={match.id} 
+                      match={match} 
+                      isNextMatch={nextMatch?.id === match.id} 
+                      onJoinClick={() => setSelectedMatch(match.id)} 
+                    />
+                  ))
+                ) : (
+                  <div className="text-center text-white/70 py-8">
                     <p>No matches available at the moment.</p>
                     <p className="text-sm mt-2">Be the first to create a match!</p>
-                  </div>}
+                  </div>
+                )}
               </CardContent>
             </Card>
 
             {/* Join Match Form */}
-            {selectedMatch && <JoinMatchForm matchId={selectedMatch} onJoin={handleJoinMatch} onCancel={() => setSelectedMatch(null)} />}
+            {selectedMatch && (
+              <JoinMatchForm 
+                matchId={selectedMatch} 
+                onJoin={handleJoinMatch} 
+                onCancel={() => setSelectedMatch(null)} 
+              />
+            )}
           </div>
 
           {/* Sidebar */}
