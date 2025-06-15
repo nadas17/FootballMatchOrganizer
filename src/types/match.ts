@@ -1,19 +1,22 @@
 
 export interface Match {
   id: string;
-  title: string;
-  match_date: string;
-  match_time: string;
-  location: string;
-  location_lat?: number;
-  location_lng?: number;
-  description: string;
+  title: string | null;
+  match_date: string | null;
+  match_time: string | null;
+  location: string | null;
+  location_lat: number | null;
+  location_lng: number | null;
+  description: string | null;
   price_per_player: number | null;
-  max_players: number;
+  max_players: number | null;
   current_players: number;
+  created_at: string;
   participants: Array<{
     id: string;
     participant_name: string;
-    team: string;
+    team: string | null;
+    match_id: string;
+    created_at: string;
   }>;
 }

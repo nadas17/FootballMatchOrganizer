@@ -42,8 +42,19 @@ const Index = () => {
       if (participantsError) throw participantsError;
 
       // Combine matches with their participants
-      const matchesWithParticipants = matchesData?.map(match => ({
-        ...match,
+      const matchesWithParticipants: Match[] = matchesData?.map(match => ({
+        id: match.id,
+        title: match.title,
+        match_date: match.match_date,
+        match_time: match.match_time,
+        location: match.location,
+        location_lat: match.location_lat,
+        location_lng: match.location_lng,
+        description: match.description,
+        price_per_player: match.price_per_player,
+        max_players: match.max_players,
+        current_players: match.current_players,
+        created_at: match.created_at,
         participants: participantsData?.filter(p => p.match_id === match.id) || []
       })) || [];
 
@@ -102,9 +113,11 @@ const Index = () => {
   };
 
   const nextMatch = matches.filter(m => {
+    if (!m.match_date || !m.match_time) return false;
     const matchDateTime = new Date(`${m.match_date}T${m.match_time}`);
     return matchDateTime > new Date();
   }).sort((a, b) => {
+    if (!a.match_date || !a.match_time || !b.match_date || !b.match_time) return 0;
     const aDate = new Date(`${a.match_date}T${a.match_time}`);
     const bDate = new Date(`${b.match_date}T${b.match_time}`);
     return aDate.getTime() - bDate.getTime();
@@ -213,7 +226,7 @@ const Index = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-white/70">Available Spots</span>
                   <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">
-                    {matches.reduce((acc, match) => acc + (match.max_players - match.current_players), 0)}
+                    {matches.reduce((acc, match) => acc + ((match.max_players || 0) - match.current_players), 0)}
                   </Badge>
                 </div>
               </CardContent>

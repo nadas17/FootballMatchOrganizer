@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ interface MatchCardProps {
 
 const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick }) => {
   const [showParticipants, setShowParticipants] = useState(false);
-  const isFull = match.current_players >= match.max_players;
+  const isFull = match.current_players >= (match.max_players || 0);
   
   const teamA = match.participants.filter(p => p.team === 'A');
   const teamB = match.participants.filter(p => p.team === 'B');
@@ -27,14 +28,14 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick }
         <div className="flex justify-between items-start mb-4">
           <div>
             <h3 className="text-xl font-bold text-white font-orbitron mb-2">
-              {match.title}
+              {match.title || 'Untitled Match'}
               {isNextMatch && (
                 <Badge className="ml-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 animate-pulse">
                   NEXT MATCH
                 </Badge>
               )}
             </h3>
-            <p className="text-white/70 text-sm">{match.description}</p>
+            <p className="text-white/70 text-sm">{match.description || 'No description'}</p>
           </div>
           
           {isNextMatch && (
@@ -54,17 +55,19 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick }
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <div className="flex items-center gap-2 text-white/80">
             <Calendar className="w-4 h-4 text-emerald-400" />
-            <span className="text-sm">{new Date(match.match_date).toLocaleDateString()}</span>
+            <span className="text-sm">
+              {match.match_date ? new Date(match.match_date).toLocaleDateString() : 'TBD'}
+            </span>
           </div>
           
           <div className="flex items-center gap-2 text-white/80">
             <Clock className="w-4 h-4 text-blue-400" />
-            <span className="text-sm">{match.match_time}</span>
+            <span className="text-sm">{match.match_time || 'TBD'}</span>
           </div>
           
           <div className="flex items-center gap-2 text-white/80">
             <MapPin className="w-4 h-4 text-orange-400" />
-            <span className="text-sm truncate">{match.location}</span>
+            <span className="text-sm truncate">{match.location || 'TBD'}</span>
           </div>
           
           <div className="flex items-center gap-2 text-white/80">
@@ -84,7 +87,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick }
           >
             <Users className="w-4 h-4 mr-2 text-purple-400" />
             <span className="font-semibold">
-              Players: {match.current_players}/{match.max_players}
+              Players: {match.current_players}/{match.max_players || 0}
             </span>
             {showParticipants ? (
               <ChevronUp className="w-4 h-4 ml-2" />
