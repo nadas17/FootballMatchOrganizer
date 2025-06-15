@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, Users, Euro, ChevronDown, ChevronUp } from "lucide-react";
+import { MapPin, Clock, Users, Euro, ChevronDown, ChevronUp, Calendar } from "lucide-react";
 
 interface Match {
   id: number;
