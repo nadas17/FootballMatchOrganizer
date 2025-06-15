@@ -1,16 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-interface Match {
-  id: number;
-  title: string;
-  match_date: string;
-  match_time: string;
-}
+import { MatchData } from "@/types/match";
 
 interface CountdownTimerProps {
-  match: Match;
+  match: MatchData;
 }
 
 const CountdownTimer: React.FC<CountdownTimerProps> = ({ match }) => {
@@ -23,6 +17,8 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ match }) => {
 
   useEffect(() => {
     const timer = setInterval(() => {
+      if (!match.match_date || !match.match_time) return;
+      
       const matchDate = new Date(`${match.match_date}T${match.match_time}`);
       const now = new Date();
       const difference = matchDate.getTime() - now.getTime();
@@ -49,7 +45,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ match }) => {
           <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
           Next Match
         </CardTitle>
-        <p className="text-white/70 text-sm">{match.title}</p>
+        <p className="text-white/70 text-sm">{match.title || 'Untitled Match'}</p>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-4 text-center">
@@ -73,7 +69,9 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ match }) => {
         
         <div className="mt-4 text-center">
           <p className="text-white/60 text-sm">
-            {new Date(`${match.match_date}T${match.match_time}`).toLocaleDateString('en-GB')} at {match.match_time}
+            {match.match_date && match.match_time && 
+              `${new Date(match.match_date).toLocaleDateString('en-GB')} at ${match.match_time}`
+            }
           </p>
         </div>
       </CardContent>
