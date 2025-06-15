@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -84,14 +83,15 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Animated Stadium Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900 via-blue-900 to-purple-900">
-        <div 
-          className="absolute inset-0 animate-pulse"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}
-        ></div>
+      {/* Stadium Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('/lovable-uploads/0fd39a8d-c556-4aef-b409-28418264a43f.png')`
+        }}
+      >
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
       </div>
 
       {/* Stadium Lights Effect */}
@@ -107,7 +107,7 @@ const Index = () => {
           <h2 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-orange-400 via-red-400 to-pink-400 bg-clip-text text-transparent animate-gradient-x delay-300 font-orbitron">
             ARENA
           </h2>
-          <p className="text-xl text-white/80 mt-6 max-w-2xl mx-auto font-inter">
+          <p className="text-xl text-white/90 mt-6 max-w-2xl mx-auto font-inter drop-shadow-lg">
             Join the ultimate football experience. Connect with players, organize matches, and feel the stadium atmosphere.
           </p>
           
