@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,12 +16,12 @@ const Index = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+
   useEffect(() => {
     fetchMatches();
   }, []);
+
   const fetchMatches = async () => {
     try {
       setLoading(true);
@@ -58,6 +59,7 @@ const Index = () => {
       setLoading(false);
     }
   };
+
   const handleJoinMatch = async (matchId: string, playerName: string, team: string) => {
     try {
       // Insert new participant
@@ -98,6 +100,7 @@ const Index = () => {
       });
     }
   };
+
   const nextMatch = matches.filter(m => {
     const matchDateTime = new Date(`${m.match_date}T${m.match_time}`);
     return matchDateTime > new Date();
@@ -106,16 +109,21 @@ const Index = () => {
     const bDate = new Date(`${b.match_date}T${b.match_time}`);
     return aDate.getTime() - bDate.getTime();
   })[0];
+
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-black">
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-white text-xl">Loading matches...</div>
-      </div>;
+      </div>
+    );
   }
-  return <div className="min-h-screen relative overflow-hidden">
+
+  return (
+    <div className="min-h-screen relative overflow-hidden">
       {/* Stadium Background Image */}
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
-      backgroundImage: `url('/lovable-uploads/ff1b8d41-7e80-4428-b2cf-e467c86fc867.png')`
-    }}>
+        backgroundImage: `url('/lovable-uploads/ff1b8d41-7e80-4428-b2cf-e467c86fc867.png')`
+      }}>
         {/* Dark overlay for better text readability */}
         <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
       </div>
@@ -237,9 +245,8 @@ const Index = () => {
           </div>
         </div>
       </div>
-
-      {/* Enhanced Football floating animation */}
-      
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
