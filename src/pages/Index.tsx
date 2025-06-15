@@ -41,7 +41,7 @@ const Index = () => {
       
       if (participantsError) throw participantsError;
 
-      // Combine matches with their participants and sort by date/time
+      // Combine matches with their participants
       const matchesWithParticipants: MatchData[] = matchesData?.map(match => ({
         id: match.id,
         title: match.title,
@@ -62,7 +62,6 @@ const Index = () => {
       const sortedMatches = matchesWithParticipants.sort((a, b) => {
         const now = new Date();
         
-        // Helper function to get match datetime
         const getMatchDateTime = (match: MatchData) => {
           if (!match.match_date || !match.match_time) return null;
           return new Date(`${match.match_date}T${match.match_time}`);
@@ -71,16 +70,27 @@ const Index = () => {
         const aDateTime = getMatchDateTime(a);
         const bDateTime = getMatchDateTime(b);
         
-        // If both have dates, sort by date (upcoming first)
-        if (aDateTime && bDateTime) {
-          return aDateTime.getTime() - bDateTime.getTime();
+        const isAUpcoming = aDateTime ? aDateTime > now : false;
+        const isBUpcoming = bDateTime ? bDateTime > now : false;
+
+        // Rule 1: Upcoming matches come before past/undated matches.
+        if (isAUpcoming && !isBUpcoming) return -1;
+        if (!isAUpcoming && isBUpcoming) return 1;
+
+        // Rule 2: If both are upcoming, sort by date ascending (soonest first).
+        if (isAUpcoming && isBUpcoming && aDateTime && bDateTime) {
+            return aDateTime.getTime() - bDateTime.getTime();
         }
-        
-        // If only one has a date, prioritize the one with date
+
+        // Rule 3: If both are past or undated, sort by date descending (most recent past match first).
+        // If one has a date and the other doesn't, the one with the date comes first.
+        if (aDateTime && bDateTime) {
+            return bDateTime.getTime() - aDateTime.getTime();
+        }
         if (aDateTime && !bDateTime) return -1;
         if (!aDateTime && bDateTime) return 1;
-        
-        // If neither has dates, sort by creation date (newest first)
+
+        // Rule 4: If neither has a date, sort by creation date descending (newest first).
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
 
@@ -162,17 +172,13 @@ const Index = () => {
         <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
       </div>
 
-      {/* Stadium Lights Effect */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-radial from-yellow-400/20 to-transparent rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute top-20 right-1/4 w-80 h-80 bg-gradient-radial from-blue-400/20 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
-
       <div className="relative z-10 container mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent animate-gradient-x mb-4 font-orbitron">FUTBOL SAVAŞÇILARI</h1>
+          <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent animate-gradient-x mb-4 font-orbitron">FOOTBALL WARRIORS</h1>
           <h2 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-orange-400 via-red-400 to-pink-400 bg-clip-text text-transparent animate-gradient-x delay-300 font-orbitron">Organization</h2>
           <p className="text-xl text-white/90 mt-6 max-w-2xl mx-auto font-inter drop-shadow-lg">
-            Sahada yaşanacak en büyük mücadeleye hazır mısın? Gerçek savaşçılar burada buluşuyor. Takımını kur, rakiplerini yen!
+            Are you ready for the greatest battle on the field? Real warriors meet here. Build your team, defeat your opponents!
           </p>
           
           {/* Floating Action Button */}
@@ -284,3 +290,4 @@ const Index = () => {
 };
 
 export default Index;
+
