@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,10 +9,10 @@ import CountdownTimer from "@/components/CountdownTimer";
 import CreateMatchButton from "@/components/CreateMatchButton";
 import JoinMatchForm from "@/components/JoinMatchForm";
 import { supabase } from "@/integrations/supabase/client";
-import { Match } from "@/types/match";
+import { MatchData } from "@/types/match";
 
 const Index = () => {
-  const [matches, setMatches] = useState<Match[]>([]);
+  const [matches, setMatches] = useState<MatchData[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -42,7 +41,7 @@ const Index = () => {
       if (participantsError) throw participantsError;
 
       // Combine matches with their participants and sort by date/time
-      const matchesWithParticipants: Match[] = matchesData?.map(match => ({
+      const matchesWithParticipants: MatchData[] = matchesData?.map(match => ({
         id: match.id,
         title: match.title,
         match_date: match.match_date,
@@ -63,7 +62,7 @@ const Index = () => {
         const now = new Date();
         
         // Helper function to get match datetime
-        const getMatchDateTime = (match: Match) => {
+        const getMatchDateTime = (match: MatchData) => {
           if (!match.match_date || !match.match_time) return null;
           return new Date(`${match.match_date}T${match.match_time}`);
         };

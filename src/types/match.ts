@@ -1,5 +1,5 @@
 
-export interface Match {
+export interface MatchData {
   id: string;
   title: string | null;
   match_date: string | null;
