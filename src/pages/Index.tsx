@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +9,6 @@ import CountdownTimer from "@/components/CountdownTimer";
 import CreateMatchButton from "@/components/CreateMatchButton";
 import JoinMatchForm from "@/components/JoinMatchForm";
 import { supabase } from "@/integrations/supabase/client";
-
 interface Match {
   id: string;
   title: string;
@@ -29,34 +27,34 @@ interface Match {
     team: string;
   }>;
 }
-
 const Index = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   useEffect(() => {
     fetchMatches();
   }, []);
-
   const fetchMatches = async () => {
     try {
       setLoading(true);
-      
-      // Fetch matches
-      const { data: matchesData, error: matchesError } = await supabase
-        .from('matches')
-        .select('*')
-        .order('match_date', { ascending: true });
 
+      // Fetch matches
+      const {
+        data: matchesData,
+        error: matchesError
+      } = await supabase.from('matches').select('*').order('match_date', {
+        ascending: true
+      });
       if (matchesError) throw matchesError;
 
       // Fetch participants for each match
-      const { data: participantsData, error: participantsError } = await supabase
-        .from('match_participants')
-        .select('*');
-
+      const {
+        data: participantsData,
+        error: participantsError
+      } = await supabase.from('match_participants').select('*');
       if (participantsError) throw participantsError;
 
       // Combine matches with their participants
@@ -64,7 +62,6 @@ const Index = () => {
         ...match,
         participants: participantsData?.filter(p => p.match_id === match.id) || []
       })) || [];
-
       setMatches(matchesWithParticipants);
     } catch (error) {
       console.error('Error fetching matches:', error);
@@ -77,34 +74,31 @@ const Index = () => {
       setLoading(false);
     }
   };
-
   const handleJoinMatch = async (matchId: string, playerName: string, team: string) => {
     try {
       // Insert new participant
-      const { error } = await supabase
-        .from('match_participants')
-        .insert({
-          match_id: matchId,
-          participant_name: playerName,
-          team: team
-        });
-
+      const {
+        error
+      } = await supabase.from('match_participants').insert({
+        match_id: matchId,
+        participant_name: playerName,
+        team: team
+      });
       if (error) throw error;
 
       // Update current_players count
       const match = matches.find(m => m.id === matchId);
       if (match) {
-        const { error: updateError } = await supabase
-          .from('matches')
-          .update({ current_players: match.current_players + 1 })
-          .eq('id', matchId);
-
+        const {
+          error: updateError
+        } = await supabase.from('matches').update({
+          current_players: match.current_players + 1
+        }).eq('id', matchId);
         if (updateError) throw updateError;
       }
 
       // Refresh matches data
       await fetchMatches();
-
       toast({
         title: "Successfully joined! ⚽",
         description: `Welcome to the match, ${playerName}!`
@@ -119,7 +113,6 @@ const Index = () => {
       });
     }
   };
-
   const nextMatch = matches.filter(m => {
     const matchDateTime = new Date(`${m.match_date}T${m.match_time}`);
     return matchDateTime > new Date();
@@ -128,21 +121,16 @@ const Index = () => {
     const bDate = new Date(`${b.match_date}T${b.match_time}`);
     return aDate.getTime() - bDate.getTime();
   })[0];
-
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+    return <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-white text-xl">Loading matches...</div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen relative overflow-hidden">
+  return <div className="min-h-screen relative overflow-hidden">
       {/* Stadium Background Image */}
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
-        backgroundImage: `url('/lovable-uploads/ff1b8d41-7e80-4428-b2cf-e467c86fc867.png')`
-      }}>
+      backgroundImage: `url('/lovable-uploads/ff1b8d41-7e80-4428-b2cf-e467c86fc867.png')`
+    }}>
         {/* Dark overlay for better text readability */}
         <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
       </div>
@@ -178,32 +166,15 @@ const Index = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {matches.length > 0 ? (
-                  matches.map(match => (
-                    <MatchCard 
-                      key={match.id} 
-                      match={match} 
-                      isNextMatch={nextMatch?.id === match.id} 
-                      onJoinClick={() => setSelectedMatch(match.id)} 
-                    />
-                  ))
-                ) : (
-                  <div className="text-center text-white/70 py-8">
+                {matches.length > 0 ? matches.map(match => <MatchCard key={match.id} match={match} isNextMatch={nextMatch?.id === match.id} onJoinClick={() => setSelectedMatch(match.id)} />) : <div className="text-center text-white/70 py-8">
                     <p>No matches available at the moment.</p>
                     <p className="text-sm mt-2">Be the first to create a match!</p>
-                  </div>
-                )}
+                  </div>}
               </CardContent>
             </Card>
 
             {/* Join Match Form */}
-            {selectedMatch && (
-              <JoinMatchForm 
-                matchId={selectedMatch} 
-                onJoin={handleJoinMatch} 
-                onCancel={() => setSelectedMatch(null)} 
-              />
-            )}
+            {selectedMatch && <JoinMatchForm matchId={selectedMatch} onJoin={handleJoinMatch} onCancel={() => setSelectedMatch(null)} />}
           </div>
 
           {/* Sidebar */}
@@ -266,11 +237,7 @@ const Index = () => {
       </div>
 
       {/* Enhanced Football floating animation */}
-      <div className="fixed bottom-10 right-10 w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-full animate-bounce shadow-2xl flex items-center justify-center text-3xl z-50 hover:scale-110 transition-transform cursor-pointer">
-        ⚽
-      </div>
-    </div>
-  );
+      
+    </div>;
 };
-
 export default Index;
