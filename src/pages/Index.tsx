@@ -41,7 +41,7 @@ const Index = () => {
       
       if (participantsError) throw participantsError;
 
-      // Combine matches with their participants
+      // Combine matches with their participants and sort by date/time
       const matchesWithParticipants: Match[] = matchesData?.map(match => ({
         id: match.id,
         title: match.title,
@@ -58,7 +58,33 @@ const Index = () => {
         participants: participantsData?.filter(p => p.match_id === match.id) || []
       })) || [];
 
-      setMatches(matchesWithParticipants);
+      // Sort matches: upcoming matches first, then past matches
+      const sortedMatches = matchesWithParticipants.sort((a, b) => {
+        const now = new Date();
+        
+        // Helper function to get match datetime
+        const getMatchDateTime = (match: Match) => {
+          if (!match.match_date || !match.match_time) return null;
+          return new Date(`${match.match_date}T${match.match_time}`);
+        };
+        
+        const aDateTime = getMatchDateTime(a);
+        const bDateTime = getMatchDateTime(b);
+        
+        // If both have dates, sort by date (upcoming first)
+        if (aDateTime && bDateTime) {
+          return aDateTime.getTime() - bDateTime.getTime();
+        }
+        
+        // If only one has a date, prioritize the one with date
+        if (aDateTime && !bDateTime) return -1;
+        if (!aDateTime && bDateTime) return 1;
+        
+        // If neither has dates, sort by creation date (newest first)
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+
+      setMatches(sortedMatches);
     } catch (error) {
       console.error('Error fetching matches:', error);
       toast({
@@ -116,12 +142,7 @@ const Index = () => {
     if (!m.match_date || !m.match_time) return false;
     const matchDateTime = new Date(`${m.match_date}T${m.match_time}`);
     return matchDateTime > new Date();
-  }).sort((a, b) => {
-    if (!a.match_date || !a.match_time || !b.match_date || !b.match_time) return 0;
-    const aDate = new Date(`${a.match_date}T${a.match_time}`);
-    const bDate = new Date(`${b.match_date}T${b.match_time}`);
-    return aDate.getTime() - bDate.getTime();
-  })[0];
+  })[0]; // Take the first one since they're already sorted
 
   if (loading) {
     return (

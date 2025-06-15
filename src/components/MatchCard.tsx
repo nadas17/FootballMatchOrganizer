@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, Users, Euro, ChevronDown, ChevronUp, Calendar } from "lucide-react";
+import { MapPin, Clock, Users, Calendar } from "lucide-react";
 import { Match } from "@/types/match";
 
 interface MatchCardProps {
@@ -71,9 +71,9 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick }
           </div>
           
           <div className="flex items-center gap-2 text-white/80">
-            <Euro className="w-4 h-4 text-yellow-400" />
+            <div className="text-yellow-400 font-bold text-sm">zł</div>
             <span className="text-sm">
-              {match.price_per_player ? `${match.price_per_player} TL` : 'Free'}
+              {match.price_per_player ? `${match.price_per_player} PLN` : 'Free'}
             </span>
           </div>
         </div>
@@ -90,9 +90,13 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick }
               Players: {match.current_players}/{match.max_players || 0}
             </span>
             {showParticipants ? (
-              <ChevronUp className="w-4 h-4 ml-2" />
+              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
             ) : (
-              <ChevronDown className="w-4 h-4 ml-2" />
+              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
             )}
           </Button>
           
