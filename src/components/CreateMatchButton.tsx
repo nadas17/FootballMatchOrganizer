@@ -12,9 +12,9 @@ const CreateMatchButton: React.FC = () => {
   return (
     <Button
       onClick={handleCreateMatch}
-      className="group relative overflow-hidden bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl hover:shadow-orange-500/25 transition-all duration-500 transform hover:scale-105 animate-pulse-slow"
+      className="group relative overflow-hidden bg-gradient-to-r from-slate-700 via-slate-600 to-green-800 hover:from-slate-800 hover:via-slate-700 hover:to-green-900 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl hover:shadow-green-800/25 transition-all duration-500 transform hover:scale-105 animate-pulse-slow"
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-green-700 via-slate-600 to-slate-800 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
       
       <div className="relative flex items-center gap-3">
         <div className="relative">
@@ -22,9 +22,9 @@ const CreateMatchButton: React.FC = () => {
           <div className="absolute inset-0 bg-white/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         </div>
         
-        <span className="text-lg font-orbitron">Create New Match</span>
+        <span className="text-lg font-orbitron">Yeni Maç Oluştur</span>
         
-        <Zap className="w-5 h-5 text-yellow-300 animate-pulse" />
+        <Zap className="w-5 h-5 text-green-300 animate-pulse" />
       </div>
       
       {/* Electric effect */}
