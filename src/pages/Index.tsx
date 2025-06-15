@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,86 +10,85 @@ import CreateMatchButton from "@/components/CreateMatchButton";
 import JoinMatchForm from "@/components/JoinMatchForm";
 
 // Mock data - in real app this would come from your Supabase
-const mockMatches = [
-  {
+const mockMatches = [{
+  id: 1,
+  title: "Weekend Champions League",
+  match_date: "2024-01-20",
+  match_time: "18:00",
+  location: "Stadion Narodowy, Warsaw",
+  location_lat: 52.2397,
+  location_lng: 21.0129,
+  description: "Competitive 11v11 match with professional referee",
+  price_per_player: 25,
+  max_players: 22,
+  current_players: 18,
+  participants: [{
     id: 1,
-    title: "Weekend Champions League",
-    match_date: "2024-01-20",
-    match_time: "18:00",
-    location: "Stadion Narodowy, Warsaw",
-    location_lat: 52.2397,
-    location_lng: 21.0129,
-    description: "Competitive 11v11 match with professional referee",
-    price_per_player: 25,
-    max_players: 22,
-    current_players: 18,
-    participants: [
-      { id: 1, participant_name: "Marcus Silva", team: "A" },
-      { id: 2, participant_name: "Roberto Carlos", team: "A" },
-      { id: 3, participant_name: "Diego Martinez", team: "B" },
-      { id: 4, participant_name: "Alex Johnson", team: "B" },
-    ]
-  },
-  {
+    participant_name: "Marcus Silva",
+    team: "A"
+  }, {
     id: 2,
-    title: "Friday Night Football",
-    match_date: "2024-01-19",
-    match_time: "20:30",
-    location: "Orlik Park Skaryszewski",
-    location_lat: 52.2297,
-    location_lng: 21.0622,
-    description: "Casual 7v7 game under floodlights",
-    price_per_player: null,
-    max_players: 14,
-    current_players: 12,
-    participants: [
-      { id: 5, participant_name: "Cristiano Jr", team: "A" },
-      { id: 6, participant_name: "Lionel Park", team: "B" },
-    ]
-  }
-];
-
+    participant_name: "Roberto Carlos",
+    team: "A"
+  }, {
+    id: 3,
+    participant_name: "Diego Martinez",
+    team: "B"
+  }, {
+    id: 4,
+    participant_name: "Alex Johnson",
+    team: "B"
+  }]
+}, {
+  id: 2,
+  title: "Friday Night Football",
+  match_date: "2024-01-19",
+  match_time: "20:30",
+  location: "Orlik Park Skaryszewski",
+  location_lat: 52.2297,
+  location_lng: 21.0622,
+  description: "Casual 7v7 game under floodlights",
+  price_per_player: null,
+  max_players: 14,
+  current_players: 12,
+  participants: [{
+    id: 5,
+    participant_name: "Cristiano Jr",
+    team: "A"
+  }, {
+    id: 6,
+    participant_name: "Lionel Park",
+    team: "B"
+  }]
+}];
 const Index = () => {
   const [matches, setMatches] = useState(mockMatches);
   const [selectedMatch, setSelectedMatch] = useState<number | null>(null);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const handleJoinMatch = (matchId: number, playerName: string, team: string) => {
-    setMatches(prev => prev.map(match => 
-      match.id === matchId 
-        ? {
-            ...match,
-            current_players: match.current_players + 1,
-            participants: [...match.participants, {
-              id: Date.now(),
-              participant_name: playerName,
-              team
-            }]
-          }
-        : match
-    ));
-    
+    setMatches(prev => prev.map(match => match.id === matchId ? {
+      ...match,
+      current_players: match.current_players + 1,
+      participants: [...match.participants, {
+        id: Date.now(),
+        participant_name: playerName,
+        team
+      }]
+    } : match));
     toast({
       title: "Successfully joined! ⚽",
-      description: `Welcome to the match, ${playerName}!`,
+      description: `Welcome to the match, ${playerName}!`
     });
-    
     setSelectedMatch(null);
   };
-
-  const nextMatch = matches
-    .filter(m => new Date(`${m.match_date}T${m.match_time}`) > new Date())
-    .sort((a, b) => new Date(`${a.match_date}T${a.match_time}`).getTime() - new Date(`${b.match_date}T${b.match_time}`).getTime())[0];
-
-  return (
-    <div className="min-h-screen relative overflow-hidden">
+  const nextMatch = matches.filter(m => new Date(`${m.match_date}T${m.match_time}`) > new Date()).sort((a, b) => new Date(`${a.match_date}T${a.match_time}`).getTime() - new Date(`${b.match_date}T${b.match_time}`).getTime())[0];
+  return <div className="min-h-screen relative overflow-hidden">
       {/* Stadium Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url('/lovable-uploads/ff1b8d41-7e80-4428-b2cf-e467c86fc867.png')`
-        }}
-      >
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
+      backgroundImage: `url('/lovable-uploads/ff1b8d41-7e80-4428-b2cf-e467c86fc867.png')`
+    }}>
         {/* Dark overlay for better text readability */}
         <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
       </div>
@@ -130,33 +128,18 @@ const Index = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {matches.map((match) => (
-                  <MatchCard 
-                    key={match.id} 
-                    match={match}
-                    isNextMatch={nextMatch?.id === match.id}
-                    onJoinClick={() => setSelectedMatch(match.id)}
-                  />
-                ))}
+                {matches.map(match => <MatchCard key={match.id} match={match} isNextMatch={nextMatch?.id === match.id} onJoinClick={() => setSelectedMatch(match.id)} />)}
               </CardContent>
             </Card>
 
             {/* Join Match Form */}
-            {selectedMatch && (
-              <JoinMatchForm
-                matchId={selectedMatch}
-                onJoin={handleJoinMatch}
-                onCancel={() => setSelectedMatch(null)}
-              />
-            )}
+            {selectedMatch && <JoinMatchForm matchId={selectedMatch} onJoin={handleJoinMatch} onCancel={() => setSelectedMatch(null)} />}
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Countdown Timer */}
-            {nextMatch && (
-              <CountdownTimer match={nextMatch} />
-            )}
+            {nextMatch && <CountdownTimer match={nextMatch} />}
 
             {/* Quick Stats */}
             <Card className="glass-card border-none shadow-2xl">
@@ -218,14 +201,8 @@ const Index = () => {
       </div>
       
       {/* Additional floating footballs for more dynamic effect */}
-      <div className="fixed top-20 left-10 w-12 h-12 bg-gradient-to-br from-orange-300 to-red-400 rounded-full animate-pulse shadow-lg flex items-center justify-center text-xl z-40 opacity-70">
-        ⚽
-      </div>
-      <div className="fixed bottom-1/3 left-20 w-8 h-8 bg-gradient-to-br from-orange-200 to-red-300 rounded-full animate-bounce shadow-md flex items-center justify-center text-sm z-30 opacity-50 animation-delay-500">
-        ⚽
-      </div>
-    </div>
-  );
+      
+      
+    </div>;
 };
-
 export default Index;
