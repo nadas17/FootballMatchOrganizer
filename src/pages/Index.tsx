@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +14,7 @@ import { MatchData, MatchRequest } from "@/types/match";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getCreatorInfo } from "@/utils/localStorage";
 
-const Index = () => {
+const Index: React.FC = () => {
   const [matches, setMatches] = useState<MatchData[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
