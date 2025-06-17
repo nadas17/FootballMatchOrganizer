@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +24,9 @@ const Index = () => {
   const creatorNickname = localStorage.getItem('football_creator_nickname');
 
   useEffect(() => {
+    console.log('=== INDEX COMPONENT MOUNTED ===');
+    console.log('Creator ID:', creatorId);
+    console.log('Creator Nickname:', creatorNickname);
     fetchMatches();
     if (creatorId) {
       fetchRequestCounts();
@@ -33,6 +35,7 @@ const Index = () => {
 
   const fetchMatches = async () => {
     try {
+      console.log('=== FETCHING MATCHES ===');
       setLoading(true);
 
       // Fetch matches
@@ -41,12 +44,16 @@ const Index = () => {
         .select('*')
         .order('match_date', { ascending: true });
       
+      console.log('Matches fetch result:', { matchesData, matchesError });
+      
       if (matchesError) throw matchesError;
 
       // Fetch participants for each match
       const { data: participantsData, error: participantsError } = await supabase
         .from('match_participants')
         .select('*');
+      
+      console.log('Participants fetch result:', { participantsData, participantsError });
       
       if (participantsError) throw participantsError;
 
@@ -68,6 +75,8 @@ const Index = () => {
         creator_nickname: match.creator_nickname,
         participants: participantsData?.filter(p => p.match_id === match.id) || []
       })) || [];
+
+      console.log('Combined matches with participants:', matchesWithParticipants);
 
       // Sort matches: upcoming matches first, then past matches
       const sortedMatches = matchesWithParticipants.sort((a, b) => {
@@ -105,9 +114,11 @@ const Index = () => {
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
 
+      console.log('Final sorted matches:', sortedMatches);
       setMatches(sortedMatches);
     } catch (error) {
-      console.error('Error fetching matches:', error);
+      console.error('=== ERROR FETCHING MATCHES ===');
+      console.error('Error details:', error);
       toast({
         title: "Error",
         description: "Failed to load matches",
@@ -115,6 +126,7 @@ const Index = () => {
       });
     } finally {
       setLoading(false);
+      console.log('=== MATCHES FETCH COMPLETE ===');
     }
   };
 
@@ -122,6 +134,9 @@ const Index = () => {
     if (!creatorId) return;
 
     try {
+      console.log('=== FETCHING REQUEST COUNTS ===');
+      console.log('Creator ID for counts:', creatorId);
+      
       const { data, error } = await supabase
         .from('match_requests')
         .select(`
@@ -131,6 +146,8 @@ const Index = () => {
         .eq('matches.creator_id', creatorId)
         .eq('status', 'pending');
 
+      console.log('Request counts fetch result:', { data, error });
+
       if (error) throw error;
 
       const counts: Record<string, number> = {};
@@ -138,16 +155,22 @@ const Index = () => {
         counts[request.match_id] = (counts[request.match_id] || 0) + 1;
       });
 
+      console.log('Processed request counts:', counts);
       setRequestCounts(counts);
     } catch (error) {
-      console.error('Error fetching request counts:', error);
+      console.error('=== ERROR FETCHING REQUEST COUNTS ===');
+      console.error('Error details:', error);
     }
   };
 
   const handleJoinSuccess = () => {
+    console.log('=== JOIN SUCCESS CALLBACK ===');
     setSelectedMatch(null);
-    // Refresh matches data
+    // Refresh matches data and request counts
     fetchMatches();
+    if (creatorId) {
+      fetchRequestCounts();
+    }
   };
 
   const now = new Date();
@@ -227,7 +250,10 @@ const Index = () => {
                         key={match.id} 
                         match={match} 
                         isNextMatch={nextMatch?.id === match.id} 
-                        onJoinClick={() => setSelectedMatch(match.id)}
+                        onJoinClick={() => {
+                          console.log('Join button clicked for match:', match.id);
+                          setSelectedMatch(match.id);
+                        }}
                         pendingRequestsCount={requestCounts[match.id] || 0}
                         isCreator={match.creator_id === creatorId}
                       />
@@ -246,7 +272,10 @@ const Index = () => {
             {selectedMatch && (
               <JoinMatchForm 
                 matchId={selectedMatch} 
-                onCancel={() => setSelectedMatch(null)}
+                onCancel={() => {
+                  console.log('Join form cancelled');
+                  setSelectedMatch(null);
+                }}
                 onSuccess={handleJoinSuccess}
               />
             )}
