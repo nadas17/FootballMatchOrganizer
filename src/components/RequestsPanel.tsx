@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,11 +18,14 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log('RequestsPanel mounted with creatorId:', creatorId);
     fetchRequests();
   }, [creatorId]);
 
   const fetchRequests = async () => {
     try {
+      console.log('Fetching requests for creator:', creatorId);
+      
       const { data, error } = await supabase
         .from('match_requests')
         .select(`
@@ -31,6 +35,9 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
         .eq('matches.creator_id', creatorId)
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
+
+      console.log('Raw requests data:', data);
+      console.log('Requests fetch error:', error);
 
       if (error) throw error;
 
@@ -43,6 +50,7 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
         match_title: request.matches?.title || 'Untitled Match'
       })) || [];
 
+      console.log('Processed requests:', requestsWithMatchTitle);
       setRequests(requestsWithMatchTitle);
     } catch (error) {
       console.error('Error fetching requests:', error);
@@ -53,6 +61,8 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
 
   const handleRequest = async (requestId: string, action: 'approved' | 'rejected', matchId: string, participantName: string) => {
     try {
+      console.log('Handling request:', { requestId, action, matchId, participantName });
+      
       // Update request status
       const { error: updateError } = await supabase
         .from('match_requests')
@@ -116,74 +126,65 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
     );
   }
 
-  if (requests.length === 0) {
-    return (
-      <Card className="glass-card border-none shadow-2xl">
-        <CardHeader>
-          <CardTitle className="text-xl font-orbitron text-white flex items-center gap-2">
-            <Users className="w-5 h-5 text-emerald-400" />
-            Join Requests
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-white/70 text-center py-4">
-            No pending requests at the moment.
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className="glass-card border-none shadow-2xl">
       <CardHeader>
         <CardTitle className="text-xl font-orbitron text-white flex items-center gap-2">
           <Users className="w-5 h-5 text-emerald-400" />
           Join Requests
-          <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
-            {requests.length}
-          </Badge>
+          {requests.length > 0 && (
+            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+              {requests.length}
+            </Badge>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {requests.map((request) => (
-          <div key={request.id} className="p-4 rounded-lg bg-black/20 backdrop-blur-sm border border-white/10">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h4 className="font-semibold text-white">{request.participant_name}</h4>
-                <p className="text-white/70 text-sm">{request.match_title}</p>
-              </div>
-              <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                Pending
-              </Badge>
-            </div>
-            
-            <div className="text-white/60 text-xs mb-4">
-              Requested {new Date(request.created_at).toLocaleDateString('en-GB')} at {new Date(request.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-            </div>
-            
-            <div className="flex gap-2">
-              <Button
-                onClick={() => handleRequest(request.id, 'approved', request.match_id, request.participant_name)}
-                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
-                size="sm"
-              >
-                <CheckCircle className="w-4 h-4 mr-1" />
-                Approve
-              </Button>
-              <Button
-                onClick={() => handleRequest(request.id, 'rejected', request.match_id, request.participant_name)}
-                variant="outline"
-                className="flex-1 border-red-500/50 text-red-400 hover:bg-red-500/10"
-                size="sm"
-              >
-                <XCircle className="w-4 h-4 mr-1" />
-                Reject
-              </Button>
-            </div>
+        {requests.length === 0 ? (
+          <div className="text-white/70 text-center py-4">
+            <p>No pending requests at the moment.</p>
+            <p className="text-xs mt-2 text-white/50">Creator ID: {creatorId}</p>
           </div>
-        ))}
+        ) : (
+          requests.map((request) => (
+            <div key={request.id} className="p-4 rounded-lg bg-black/20 backdrop-blur-sm border border-white/10">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h4 className="font-semibold text-white">{request.participant_name}</h4>
+                  <p className="text-white/70 text-sm">{request.match_title}</p>
+                </div>
+                <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  Pending
+                </Badge>
+              </div>
+              
+              <div className="text-white/60 text-xs mb-4">
+                Requested {new Date(request.created_at).toLocaleDateString('en-GB')} at {new Date(request.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+              </div>
+              
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => handleRequest(request.id, 'approved', request.match_id, request.participant_name)}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                  size="sm"
+                >
+                  <CheckCircle className="w-4 h-4 mr-1" />
+                  Approve
+                </Button>
+                <Button
+                  onClick={() => handleRequest(request.id, 'rejected', request.match_id, request.participant_name)}
+                  variant="outline"
+                  className="flex-1 border-red-500/50 text-red-400 hover:bg-red-500/10"
+                  size="sm"
+                >
+                  <XCircle className="w-4 h-4 mr-1" />
+                  Reject
+                </Button>
+              </div>
+            </div>
+          ))
+        )}
       </CardContent>
     </Card>
   );

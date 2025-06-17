@@ -26,14 +26,18 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
     setLoading(true);
     
     try {
+      console.log('Starting join request for match:', matchId, 'player:', playerName.trim());
+      
       // Check if user already has a pending request for this match
-      const { data: existingRequest } = await supabase
+      const { data: existingRequest, error: checkError } = await supabase
         .from('match_requests')
         .select('id')
         .eq('match_id', matchId)
         .eq('participant_name', playerName.trim())
         .eq('status', 'pending')
         .single();
+
+      console.log('Existing request check:', { existingRequest, checkError });
 
       if (existingRequest) {
         toast({
@@ -46,15 +50,30 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
       }
 
       // Create new request
-      const { error } = await supabase
+      console.log('Creating new request with data:', {
+        match_id: matchId,
+        participant_name: playerName.trim(),
+        status: 'pending'
+      });
+
+      const { data: newRequest, error } = await supabase
         .from('match_requests')
         .insert({
           match_id: matchId,
           participant_name: playerName.trim(),
           status: 'pending'
-        });
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      console.log('Insert result:', { newRequest, error });
+
+      if (error) {
+        console.error('Insert error details:', error);
+        throw error;
+      }
+
+      console.log('Request successfully created:', newRequest);
 
       toast({
         title: "Request Sent! ⚽",
@@ -66,7 +85,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
       console.error('Error sending request:', error);
       toast({
         title: "Error",
-        description: "Failed to send join request",
+        description: `Failed to send join request: ${error.message || 'Unknown error'}`,
         variant: "destructive"
       });
     } finally {
