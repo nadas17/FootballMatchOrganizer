@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -113,9 +112,9 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
     );
   };
 
-  const handleRequest = async (requestId: string, action: 'approved' | 'rejected', matchId: string, participantName: string, position: string | null, team?: string) => {
+  const handleRequest = async (requestId: string, action: 'approved' | 'rejected', matchId: string, participantName: string, position: string | null) => {
     try {
-      console.log('Handling request:', { requestId, action, matchId, participantName, position, team });
+      console.log('Handling request:', { requestId, action, matchId, participantName, position });
       
       // Update request status
       const { error: updateError } = await supabase
@@ -126,14 +125,14 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
       if (updateError) throw updateError;
 
       if (action === 'approved') {
-        // Add participant to match with team assignment
+        // Add participant to match - let them choose team when they join
         const { error: insertError } = await supabase
           .from('match_participants')
           .insert({
             match_id: matchId,
             participant_name: participantName,
             position: position,
-            team: team || null
+            team: null // Team will be assigned later
           });
 
         if (insertError) throw insertError;

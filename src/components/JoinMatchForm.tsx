@@ -72,7 +72,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
         return;
       }
 
-      // Create new request
+      // Create new request with team selection
       console.log('Creating new join request...');
       const requestData = {
         match_id: matchId,
@@ -165,7 +165,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="playerName" className="text-white font-semibold">
-              Your Name
+              Your Name <span className="text-red-400">*</span>
             </Label>
             <Input
               id="playerName"
