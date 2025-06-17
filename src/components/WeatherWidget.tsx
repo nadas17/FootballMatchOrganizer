@@ -32,7 +32,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
       }
 
       try {
-        const API_KEY = '0bc4fb6a4a0537fb2d71e8f36ebbe3d1';
+        const API_KEY = '571e20a2cc3e600710eb33f26e1b63c3';
         
         const response = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${API_KEY}&units=metric&lang=tr`
