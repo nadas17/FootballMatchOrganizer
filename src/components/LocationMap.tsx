@@ -14,10 +14,10 @@ const LocationMap: React.FC<LocationMapProps> = ({ lat, lng, location, className
   
   return (
     <div className={`rounded-lg overflow-hidden border border-white/10 ${className}`}>
-      <div className="bg-gradient-to-r from-emerald-500/20 to-blue-500/20 p-3 border-b border-white/10">
-        <div className="flex items-center gap-2 text-white">
-          <MapPin className="w-4 h-4 text-emerald-400" />
-          <span className="font-semibold text-sm">
+      <div className="bg-gradient-to-r from-emerald-500/20 to-blue-500/20 p-2 sm:p-3 border-b border-white/10">
+        <div className="flex items-center gap-1 sm:gap-2 text-white">
+          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400 flex-shrink-0" />
+          <span className="font-semibold text-xs sm:text-sm truncate">
             {location || `${lat.toFixed(4)}, ${lng.toFixed(4)}`}
           </span>
         </div>
@@ -26,12 +26,12 @@ const LocationMap: React.FC<LocationMapProps> = ({ lat, lng, location, className
         <iframe
           src={googleMapsUrl}
           width="100%"
-          height="200"
+          height="150"
           style={{ border: 0 }}
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          className="w-full"
+          className="w-full sm:h-[200px]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
       </div>

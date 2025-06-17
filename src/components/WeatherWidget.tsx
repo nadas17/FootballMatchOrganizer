@@ -33,8 +33,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
       }
 
       try {
-        // OpenWeatherMap free API (API key gerekli)
-        const API_KEY = '0123456789abcdef'; // Buraya gerçek API key konulmalı
+        const API_KEY = '0bc4fb6a4a0537fb2d71e8f36ebbe3d1';
         const response = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${API_KEY}&units=metric&lang=tr`
         );
@@ -44,6 +43,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
         }
 
         const data = await response.json();
+        console.log('Weather API response:', data);
         
         setWeather({
           temperature: Math.round(data.main.temp),
@@ -54,17 +54,8 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
           location: location || data.name
         });
       } catch (err) {
-        console.log('Weather API error, using fallback data');
-        // API hatası durumunda gerçekçi veri göster
-        const fallbackWeather = {
-          temperature: 15,
-          condition: 'Clear',
-          description: 'açık',
-          humidity: 65,
-          windSpeed: 8,
-          location: location || 'Konum'
-        };
-        setWeather(fallbackWeather);
+        console.error('Weather API error:', err);
+        setError('Hava durumu bilgisi alınamadı');
       } finally {
         setLoading(false);
       }
@@ -76,26 +67,26 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
   const getWeatherIcon = (condition: string) => {
     switch (condition.toLowerCase()) {
       case 'clear':
-        return <Sun className="w-4 h-4 text-yellow-400" />;
+        return <Sun className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" />;
       case 'clouds':
-        return <Cloud className="w-4 h-4 text-gray-400" />;
+        return <Cloud className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />;
       case 'rain':
       case 'drizzle':
-        return <CloudRain className="w-4 h-4 text-blue-400" />;
+        return <CloudRain className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" />;
       case 'snow':
-        return <CloudSnow className="w-4 h-4 text-blue-200" />;
+        return <CloudSnow className="w-3 h-3 sm:w-4 sm:h-4 text-blue-200" />;
       default:
-        return <Cloud className="w-4 h-4 text-gray-400" />;
+        return <Cloud className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />;
     }
   };
 
   if (loading) {
     return (
       <Card className={`glass-card border-none shadow-sm ${className}`}>
-        <CardContent className="p-3">
-          <div className="animate-pulse space-y-2">
-            <div className="h-3 bg-white/20 rounded w-2/3"></div>
-            <div className="h-4 bg-white/20 rounded w-1/2"></div>
+        <CardContent className="p-2 sm:p-3">
+          <div className="animate-pulse space-y-1 sm:space-y-2">
+            <div className="h-2 sm:h-3 bg-white/20 rounded w-2/3"></div>
+            <div className="h-3 sm:h-4 bg-white/20 rounded w-1/2"></div>
           </div>
         </CardContent>
       </Card>
@@ -105,7 +96,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
   if (error || !weather) {
     return (
       <Card className={`glass-card border-none shadow-sm ${className}`}>
-        <CardContent className="p-3">
+        <CardContent className="p-2 sm:p-3">
           <div className="text-white/70 text-xs">
             Hava durumu bilgisi yüklenemedi
           </div>
@@ -116,19 +107,19 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
 
   return (
     <Card className={`glass-card border-none shadow-sm ${className}`}>
-      <CardContent className="p-3">
+      <CardContent className="p-2 sm:p-3">
         {/* Compact Header */}
-        <div className="flex items-center gap-2 mb-2">
-          <MapPin className="w-3 h-3 text-emerald-400" />
+        <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+          <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-400 flex-shrink-0" />
           <span className="text-white/70 text-xs font-medium truncate">{weather.location}</span>
         </div>
         
         {/* Main Weather Info */}
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between mb-1 sm:mb-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {getWeatherIcon(weather.condition)}
             <div>
-              <div className="text-lg font-bold text-white flex items-center gap-1">
+              <div className="text-sm sm:text-lg font-bold text-white flex items-center gap-1">
                 {weather.temperature}°C
               </div>
               <div className="text-white/70 text-xs capitalize">{weather.description}</div>
@@ -138,12 +129,12 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
         
         {/* Compact Stats */}
         <div className="flex justify-between text-xs text-white/60">
-          <div className="flex items-center gap-1">
-            <Droplets className="w-3 h-3 text-blue-400" />
+          <div className="flex items-center gap-0.5 sm:gap-1">
+            <Droplets className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-400" />
             <span>{weather.humidity}%</span>
           </div>
-          <div className="flex items-center gap-1">
-            <Wind className="w-3 h-3 text-green-400" />
+          <div className="flex items-center gap-0.5 sm:gap-1">
+            <Wind className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-400" />
             <span>{weather.windSpeed} km/h</span>
           </div>
         </div>
