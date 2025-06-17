@@ -10,7 +10,7 @@ interface LocationMapProps {
 }
 
 const LocationMap: React.FC<LocationMapProps> = ({ lat, lng, location, className = "" }) => {
-  const googleMapsUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyBFw0Qbyq9zTFTd-tuwX1MDqPJWFwqtgpw&center=${lat},${lng}&zoom=15`;
+  const googleMapsUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyASlSPjEVAHrRx1hy0KOltskpiV6cY_zyQ&center=${lat},${lng}&zoom=15`;
   
   return (
     <div className={`rounded-lg overflow-hidden border border-white/10 ${className}`}>
