@@ -29,7 +29,6 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
       console.log('=== JOIN REQUEST START ===');
       console.log('Match ID:', matchId);
       console.log('Player Name:', playerName.trim());
-      console.log('Supabase URL:', supabase.supabaseUrl);
       
       // Check if user already has a pending request for this match
       console.log('Checking for existing requests...');
