@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X, Users, Clock } from "lucide-react";
+import { X, Users, Clock, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -17,6 +17,7 @@ interface JoinMatchFormProps {
 const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSuccess }) => {
   const [playerName, setPlayerName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,6 +25,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
     if (!playerName.trim()) return;
 
     setLoading(true);
+    setError(null);
     
     try {
       console.log('=== JOIN REQUEST START ===');
@@ -44,7 +46,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
 
       if (checkError) {
         console.error('Error checking existing requests:', checkError);
-        throw checkError;
+        throw new Error(`Database error: ${checkError.message}`);
       }
 
       if (existingRequest) {
@@ -77,10 +79,15 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
 
       if (insertError) {
         console.error('Insert error details:', insertError);
-        console.error('Error code:', insertError.code);
-        console.error('Error message:', insertError.message);
-        console.error('Error details:', insertError.details);
-        throw insertError;
+        
+        // Handle specific error cases
+        if (insertError.code === '23503') {
+          throw new Error('Match not found. Please refresh the page and try again.');
+        } else if (insertError.code === '23505') {
+          throw new Error('You already have a request for this match.');
+        } else {
+          throw new Error(`Failed to send request: ${insertError.message}`);
+        }
       }
 
       console.log('Request successfully created:', newRequest);
@@ -94,16 +101,14 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
       onSuccess();
     } catch (error: any) {
       console.error('=== JOIN REQUEST ERROR ===');
-      console.error('Error type:', typeof error);
-      console.error('Error object:', error);
-      console.error('Error message:', error?.message);
-      console.error('Error code:', error?.code);
-      console.error('Error status:', error?.status);
-      console.error('Full error:', JSON.stringify(error, null, 2));
+      console.error('Error details:', error);
+      
+      const errorMessage = error?.message || 'Unknown error occurred';
+      setError(errorMessage);
       
       toast({
         title: "Error",
-        description: `Failed to send join request: ${error?.message || 'Unknown error'}`,
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -134,6 +139,15 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
             <span>Your request will be sent to the match creator for approval</span>
           </div>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+            <div className="flex items-center gap-2 text-red-400 text-sm">
+              <AlertCircle className="w-4 h-4" />
+              <span>{error}</span>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">

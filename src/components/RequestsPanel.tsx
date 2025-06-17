@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle, Clock, Users } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Users, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { MatchRequest } from "@/types/match";
@@ -15,11 +15,33 @@ interface RequestsPanelProps {
 const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
   const [requests, setRequests] = useState<(MatchRequest & { match_title: string })[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     console.log('RequestsPanel mounted with creatorId:', creatorId);
     fetchRequests();
+    
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('match_requests_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'match_requests'
+        },
+        (payload) => {
+          console.log('Real-time update received:', payload);
+          fetchRequests();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [creatorId]);
 
   const fetchRequests = async () => {
@@ -54,9 +76,20 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
       setRequests(requestsWithMatchTitle);
     } catch (error) {
       console.error('Error fetching requests:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load requests",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchRequests();
   };
 
   const handleRequest = async (requestId: string, action: 'approved' | 'rejected', matchId: string, participantName: string) => {
@@ -129,28 +162,43 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
   return (
     <Card className="glass-card border-none shadow-2xl">
       <CardHeader>
-        <CardTitle className="text-xl font-orbitron text-white flex items-center gap-2">
-          <Users className="w-5 h-5 text-emerald-400" />
-          Join Requests
-          {requests.length > 0 && (
-            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
-              {requests.length}
-            </Badge>
-          )}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl font-orbitron text-white flex items-center gap-2">
+            <Users className="w-5 h-5 text-emerald-400" />
+            Join Requests
+            {requests.length > 0 && (
+              <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 animate-pulse">
+                {requests.length}
+              </Badge>
+            )}
+          </CardTitle>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="text-white/70 hover:text-white hover:bg-white/10"
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {requests.length === 0 ? (
-          <div className="text-white/70 text-center py-4">
-            <p>No pending requests at the moment.</p>
-            <p className="text-xs mt-2 text-white/50">Creator ID: {creatorId}</p>
+          <div className="text-white/70 text-center py-8">
+            <Users className="w-12 h-12 text-white/30 mx-auto mb-4" />
+            <p className="font-semibold">No pending requests</p>
+            <p className="text-xs mt-2 text-white/50">New join requests will appear here</p>
           </div>
         ) : (
           requests.map((request) => (
-            <div key={request.id} className="p-4 rounded-lg bg-black/20 backdrop-blur-sm border border-white/10">
+            <div key={request.id} className="p-4 rounded-lg bg-gradient-to-r from-emerald-500/10 to-blue-500/10 backdrop-blur-sm border border-emerald-500/20 hover:border-emerald-500/30 transition-all duration-300">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <h4 className="font-semibold text-white">{request.participant_name}</h4>
+                  <h4 className="font-semibold text-white flex items-center gap-2">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    {request.participant_name}
+                  </h4>
                   <p className="text-white/70 text-sm">{request.match_title}</p>
                 </div>
                 <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 flex items-center gap-1">

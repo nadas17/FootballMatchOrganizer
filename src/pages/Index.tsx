@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,28 +9,51 @@ import CountdownTimer from "@/components/CountdownTimer";
 import CreateMatchButton from "@/components/CreateMatchButton";
 import JoinMatchForm from "@/components/JoinMatchForm";
 import RequestsPanel from "@/components/RequestsPanel";
+import NotificationBanner from "@/components/NotificationBanner";
 import { supabase } from "@/integrations/supabase/client";
 import { MatchData, MatchRequest } from "@/types/match";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { getCreatorInfo } from "@/utils/localStorage";
 
 const Index = () => {
   const [matches, setMatches] = useState<MatchData[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [requestCounts, setRequestCounts] = useState<Record<string, number>>({});
+  const [totalRequestCount, setTotalRequestCount] = useState(0);
+  const [showRequestsPanel, setShowRequestsPanel] = useState(false);
   const { toast } = useToast();
 
-  // Get creator info from localStorage
-  const creatorId = localStorage.getItem('football_creator_id');
-  const creatorNickname = localStorage.getItem('football_creator_nickname');
+  // Get creator info from localStorage using utility
+  const { creatorId, creatorNickname, isCreator } = getCreatorInfo();
 
   useEffect(() => {
     console.log('=== INDEX COMPONENT MOUNTED ===');
-    console.log('Creator ID:', creatorId);
-    console.log('Creator Nickname:', creatorNickname);
+    console.log('Creator info:', { creatorId, creatorNickname, isCreator });
     fetchMatches();
     if (creatorId) {
       fetchRequestCounts();
+      
+      // Set up real-time subscription for request counts
+      const channel = supabase
+        .channel('requests_count_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'match_requests'
+          },
+          () => {
+            console.log('Request count update received');
+            fetchRequestCounts();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [creatorId]);
 
@@ -151,12 +175,16 @@ const Index = () => {
       if (error) throw error;
 
       const counts: Record<string, number> = {};
+      let total = 0;
       data?.forEach(request => {
         counts[request.match_id] = (counts[request.match_id] || 0) + 1;
+        total++;
       });
 
       console.log('Processed request counts:', counts);
+      console.log('Total request count:', total);
       setRequestCounts(counts);
+      setTotalRequestCount(total);
     } catch (error) {
       console.error('=== ERROR FETCHING REQUEST COUNTS ===');
       console.error('Error details:', error);
@@ -171,6 +199,17 @@ const Index = () => {
     if (creatorId) {
       fetchRequestCounts();
     }
+  };
+
+  const handleNotificationClick = () => {
+    setShowRequestsPanel(true);
+    // Scroll to requests panel
+    setTimeout(() => {
+      const requestsPanel = document.getElementById('requests-panel');
+      if (requestsPanel) {
+        requestsPanel.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   const now = new Date();
@@ -230,6 +269,14 @@ const Index = () => {
             </div>
           )}
         </div>
+
+        {/* Notification Banner for Creators */}
+        {isCreator && totalRequestCount > 0 && (
+          <NotificationBanner 
+            requestCount={totalRequestCount} 
+            onClick={handleNotificationClick}
+          />
+        )}
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
@@ -318,7 +365,7 @@ const Index = () => {
 
             {/* Requests Panel for Creators */}
             {creatorId && (
-              <div className="animate-fade-in" style={{ animationDelay: '250ms' }}>
+              <div id="requests-panel" className="animate-fade-in" style={{ animationDelay: '250ms' }}>
                 <RequestsPanel creatorId={creatorId} />
               </div>
             )}
