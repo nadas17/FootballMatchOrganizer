@@ -113,9 +113,9 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
     );
   };
 
-  const handleRequest = async (requestId: string, action: 'approved' | 'rejected', matchId: string, participantName: string, position: string | null) => {
+  const handleRequest = async (requestId: string, action: 'approved' | 'rejected', matchId: string, participantName: string, position: string | null, team?: string) => {
     try {
-      console.log('Handling request:', { requestId, action, matchId, participantName, position });
+      console.log('Handling request:', { requestId, action, matchId, participantName, position, team });
       
       // Update request status
       const { error: updateError } = await supabase
@@ -126,14 +126,14 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
       if (updateError) throw updateError;
 
       if (action === 'approved') {
-        // Add participant to match
+        // Add participant to match with team assignment
         const { error: insertError } = await supabase
           .from('match_participants')
           .insert({
             match_id: matchId,
             participant_name: participantName,
             position: position,
-            team: null // Will be assigned later
+            team: team || null
           });
 
         if (insertError) throw insertError;
