@@ -18,6 +18,7 @@ export interface MatchData {
     id: string;
     participant_name: string;
     team: string | null;
+    position: string | null;
     match_id: string;
     created_at: string;
   }>;
@@ -28,5 +29,6 @@ export interface MatchRequest {
   match_id: string;
   participant_name: string;
   status: 'pending' | 'approved' | 'rejected';
+  position: string | null;
   created_at: string;
 }

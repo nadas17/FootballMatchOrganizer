@@ -69,6 +69,7 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
         participant_name: request.participant_name,
         status: request.status as 'pending' | 'approved' | 'rejected',
         created_at: request.created_at,
+        position: request.position,
         match_title: request.matches?.title || 'Untitled Match'
       })) || [];
 
@@ -92,9 +93,29 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
     await fetchRequests();
   };
 
-  const handleRequest = async (requestId: string, action: 'approved' | 'rejected', matchId: string, participantName: string) => {
+  const getPositionBadge = (position: string | null) => {
+    if (!position) return null;
+    
+    const positionConfig = {
+      goalkeeper: { icon: '🥅', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
+      defense: { icon: '🛡️', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+      midfield: { icon: '⚡', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
+      attack: { icon: '⚽', color: 'bg-red-500/20 text-red-400 border-red-500/30' }
+    };
+
+    const config = positionConfig[position as keyof typeof positionConfig];
+    if (!config) return null;
+
+    return (
+      <Badge className={`${config.color} text-xs`}>
+        {config.icon} {position.charAt(0).toUpperCase() + position.slice(1)}
+      </Badge>
+    );
+  };
+
+  const handleRequest = async (requestId: string, action: 'approved' | 'rejected', matchId: string, participantName: string, position: string | null) => {
     try {
-      console.log('Handling request:', { requestId, action, matchId, participantName });
+      console.log('Handling request:', { requestId, action, matchId, participantName, position });
       
       // Update request status
       const { error: updateError } = await supabase
@@ -111,6 +132,7 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
           .insert({
             match_id: matchId,
             participant_name: participantName,
+            position: position,
             team: null // Will be assigned later
           });
 
@@ -200,11 +222,14 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
                     {request.participant_name}
                   </h4>
                   <p className="text-white/70 text-sm">{request.match_title}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    {getPositionBadge(request.position)}
+                    <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      Pending
+                    </Badge>
+                  </div>
                 </div>
-                <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  Pending
-                </Badge>
               </div>
               
               <div className="text-white/60 text-xs mb-4">
@@ -213,7 +238,7 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
               
               <div className="flex gap-2">
                 <Button
-                  onClick={() => handleRequest(request.id, 'approved', request.match_id, request.participant_name)}
+                  onClick={() => handleRequest(request.id, 'approved', request.match_id, request.participant_name, request.position)}
                   className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
                   size="sm"
                 >
@@ -221,7 +246,7 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
                   Approve
                 </Button>
                 <Button
-                  onClick={() => handleRequest(request.id, 'rejected', request.match_id, request.participant_name)}
+                  onClick={() => handleRequest(request.id, 'rejected', request.match_id, request.participant_name, request.position)}
                   variant="outline"
                   className="flex-1 border-red-500/50 text-red-400 hover:bg-red-500/10"
                   size="sm"

@@ -3,8 +3,10 @@ import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, Users, Calendar, Bell } from "lucide-react";
+import { MapPin, Clock, Users, Calendar, Bell, Map } from "lucide-react";
 import { MatchData } from "@/types/match";
+import LocationMap from "./LocationMap";
+import WeatherWidget from "./WeatherWidget";
 
 interface MatchCardProps {
   match: MatchData;
@@ -24,13 +26,42 @@ const MatchCard: React.FC<MatchCardProps> = ({
   isCreator = false 
 }) => {
   const [showParticipants, setShowParticipants] = useState(false);
+  const [showMap, setShowMap] = useState(false);
   
   // Calculate actual player count from participants array
   const actualPlayerCount = match.participants.length;
   const isFull = actualPlayerCount >= (match.max_players || 0);
   
-  const teamA = match.participants.filter(p => p.team === 'A');
-  const teamB = match.participants.filter(p => p.team === 'B');
+  // Group participants by position
+  const positionGroups = {
+    goalkeeper: match.participants.filter(p => p.position === 'goalkeeper'),
+    defense: match.participants.filter(p => p.position === 'defense'),
+    midfield: match.participants.filter(p => p.position === 'midfield'),
+    attack: match.participants.filter(p => p.position === 'attack'),
+    unassigned: match.participants.filter(p => !p.position)
+  };
+
+  const hasLocation = match.location_lat && match.location_lng;
+
+  const getPositionIcon = (position: string) => {
+    switch (position) {
+      case 'goalkeeper': return '🥅';
+      case 'defense': return '🛡️';
+      case 'midfield': return '⚡';
+      case 'attack': return '⚽';
+      default: return '👤';
+    }
+  };
+
+  const getPositionColor = (position: string) => {
+    switch (position) {
+      case 'goalkeeper': return 'text-yellow-400 bg-yellow-500/10 border-yellow-500/30';
+      case 'defense': return 'text-blue-400 bg-blue-500/10 border-blue-500/30';
+      case 'midfield': return 'text-green-400 bg-green-500/10 border-green-500/30';
+      case 'attack': return 'text-red-400 bg-red-500/10 border-red-500/30';
+      default: return 'text-white/70 bg-white/10 border-white/30';
+    }
+  };
 
   return (
     <Card className={`glass-card border-none shadow-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl ${
@@ -95,15 +126,18 @@ const MatchCard: React.FC<MatchCardProps> = ({
           
           <div className="flex items-center gap-2 text-white/80">
             <MapPin className="w-4 h-4 text-orange-400" />
-            {match.location_lat && match.location_lng ? (
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${match.location_lat},${match.location_lng}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm truncate hover:text-orange-300 transition-colors"
-              >
-                {match.location || 'View on Map'}
-              </a>
+            {hasLocation ? (
+              <div className="flex items-center gap-1">
+                <span className="text-sm truncate">{match.location || 'Location'}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowMap(!showMap)}
+                  className="p-1 h-auto text-orange-400 hover:text-orange-300"
+                >
+                  <Map className="w-3 h-3" />
+                </Button>
+              </div>
             ) : (
               <span className="text-sm truncate">{match.location || 'TBD'}</span>
             )}
@@ -116,6 +150,28 @@ const MatchCard: React.FC<MatchCardProps> = ({
             </span>
           </div>
         </div>
+
+        {/* Weather Widget */}
+        {hasLocation && (
+          <div className="mb-4">
+            <WeatherWidget
+              lat={match.location_lat}
+              lng={match.location_lng}
+              location={match.location || undefined}
+            />
+          </div>
+        )}
+
+        {/* Google Maps */}
+        {showMap && hasLocation && (
+          <div className="mb-4">
+            <LocationMap
+              lat={match.location_lat}
+              lng={match.location_lng}
+              location={match.location || undefined}
+            />
+          </div>
+        )}
 
         {/* Players Counter and Join Button */}
         <div className="flex items-center justify-between mb-4">
@@ -165,42 +221,48 @@ const MatchCard: React.FC<MatchCardProps> = ({
         {/* Participants List */}
         {showParticipants && (
           <div className="mt-4 p-4 rounded-lg bg-black/20 backdrop-blur-sm border border-white/10">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <h4 className="font-semibold text-emerald-400 mb-2 flex items-center gap-2">
-                  <div className="w-3 h-3 bg-emerald-400 rounded-full"></div>
-                  Team A ({teamA.length})
-                </h4>
-                {teamA.length > 0 ? (
-                  <ul className="space-y-1">
-                    {teamA.map((player) => (
-                      <li key={player.id} className="text-white/80 text-sm bg-emerald-500/10 px-2 py-1 rounded">
-                        {player.participant_name}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-white/50 text-sm italic">No players yet</p>
-                )}
-              </div>
+            <div className="space-y-4">
+              {Object.entries(positionGroups).map(([position, players]) => {
+                if (players.length === 0) return null;
+                
+                return (
+                  <div key={position}>
+                    <h4 className={`font-semibold mb-2 flex items-center gap-2 ${getPositionColor(position).split(' ')[0]}`}>
+                      <span className="text-lg">{getPositionIcon(position)}</span>
+                      {position.charAt(0).toUpperCase() + position.slice(1)} ({players.length})
+                    </h4>
+                    <div className="grid gap-2">
+                      {players.map((player) => (
+                        <div 
+                          key={player.id} 
+                          className={`text-sm px-3 py-2 rounded-lg border ${getPositionColor(position)}`}
+                        >
+                          {player.participant_name}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
               
-              <div>
-                <h4 className="font-semibold text-blue-400 mb-2 flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-                  Team B ({teamB.length})
-                </h4>
-                {teamB.length > 0 ? (
-                  <ul className="space-y-1">
-                    {teamB.map((player) => (
-                      <li key={player.id} className="text-white/80 text-sm bg-blue-500/10 px-2 py-1 rounded">
+              {positionGroups.unassigned.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-white/70 mb-2 flex items-center gap-2">
+                    <span className="text-lg">👤</span>
+                    No Position ({positionGroups.unassigned.length})
+                  </h4>
+                  <div className="grid gap-2">
+                    {positionGroups.unassigned.map((player) => (
+                      <div 
+                        key={player.id} 
+                        className="text-white/70 text-sm bg-white/10 px-3 py-2 rounded-lg border border-white/30"
+                      >
                         {player.participant_name}
-                      </li>
+                      </div>
                     ))}
-                  </ul>
-                ) : (
-                  <p className="text-white/50 text-sm italic">No players yet</p>
-                )}
-              </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

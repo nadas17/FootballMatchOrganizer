@@ -15,6 +15,7 @@ export type Database = {
           id: string
           match_id: string
           participant_name: string
+          position: string | null
           team: string | null
         }
         Insert: {
@@ -22,6 +23,7 @@ export type Database = {
           id?: string
           match_id?: string
           participant_name: string
+          position?: string | null
           team?: string | null
         }
         Update: {
@@ -29,6 +31,7 @@ export type Database = {
           id?: string
           match_id?: string
           participant_name?: string
+          position?: string | null
           team?: string | null
         }
         Relationships: [
@@ -47,6 +50,7 @@ export type Database = {
           id: string
           match_id: string
           participant_name: string
+          position: string | null
           status: string
         }
         Insert: {
@@ -54,6 +58,7 @@ export type Database = {
           id?: string
           match_id: string
           participant_name: string
+          position?: string | null
           status?: string
         }
         Update: {
@@ -61,6 +66,7 @@ export type Database = {
           id?: string
           match_id?: string
           participant_name?: string
+          position?: string | null
           status?: string
         }
         Relationships: [

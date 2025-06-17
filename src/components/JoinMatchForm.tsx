@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { X, Users, Clock, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import PositionSelector from "./PositionSelector";
 
 interface JoinMatchFormProps {
   matchId: string;
@@ -16,13 +17,21 @@ interface JoinMatchFormProps {
 
 const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSuccess }) => {
   const [playerName, setPlayerName] = useState('');
+  const [position, setPosition] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!playerName.trim()) return;
+    if (!playerName.trim() || !position) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter your name and select a position",
+        variant: "destructive"
+      });
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -31,6 +40,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
       console.log('=== JOIN REQUEST START ===');
       console.log('Match ID:', matchId);
       console.log('Player Name:', playerName.trim());
+      console.log('Position:', position);
       
       // Check if user already has a pending request for this match
       console.log('Checking for existing requests...');
@@ -65,6 +75,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
       const requestData = {
         match_id: matchId,
         participant_name: playerName.trim(),
+        position: position,
         status: 'pending' as const
       };
       console.log('Request data:', requestData);
@@ -95,7 +106,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
 
       toast({
         title: "Request Sent! ⚽",
-        description: `Your request to join the match has been sent. The match creator will review it soon.`
+        description: `Your request to join as ${position} has been sent. The match creator will review it soon.`
       });
 
       onSuccess();
@@ -165,6 +176,12 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
             />
           </div>
 
+          <PositionSelector
+            value={position}
+            onChange={setPosition}
+            required
+          />
+
           <div className="flex gap-3 pt-4">
             <Button
               type="button"
@@ -176,7 +193,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
             </Button>
             <Button
               type="submit"
-              disabled={!playerName.trim() || loading}
+              disabled={!playerName.trim() || !position || loading}
               className="flex-1 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-bold shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
             >
               {loading ? 'Sending...' : 'Send Request ⚽'}
