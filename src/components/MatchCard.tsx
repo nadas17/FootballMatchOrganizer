@@ -56,7 +56,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
             )}
           </div>
           
-          {isNextMatch && !isCreator && (
+          {isNextMatch && !isCreator && !isArchived && (
             <div className="relative">
               <Button
                 onClick={onJoinClick}
@@ -136,7 +136,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
             )}
           </Button>
           
-          {!isNextMatch && !isArchived && !isCreator && (
+          {!isArchived && !isCreator && (
             <Button
               onClick={onJoinClick}
               disabled={isFull}
