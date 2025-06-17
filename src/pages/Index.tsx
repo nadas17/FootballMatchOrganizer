@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,19 +8,28 @@ import MatchCard from "@/components/MatchCard";
 import CountdownTimer from "@/components/CountdownTimer";
 import CreateMatchButton from "@/components/CreateMatchButton";
 import JoinMatchForm from "@/components/JoinMatchForm";
+import RequestsPanel from "@/components/RequestsPanel";
 import { supabase } from "@/integrations/supabase/client";
-import { MatchData } from "@/types/match";
+import { MatchData, MatchRequest } from "@/types/match";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const Index = () => {
   const [matches, setMatches] = useState<MatchData[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [requestCounts, setRequestCounts] = useState<Record<string, number>>({});
   const { toast } = useToast();
+
+  // Get creator info from localStorage
+  const creatorId = localStorage.getItem('football_creator_id');
+  const creatorNickname = localStorage.getItem('football_creator_nickname');
 
   useEffect(() => {
     fetchMatches();
-  }, []);
+    if (creatorId) {
+      fetchRequestCounts();
+    }
+  }, [creatorId]);
 
   const fetchMatches = async () => {
     try {
@@ -54,6 +64,8 @@ const Index = () => {
         max_players: match.max_players,
         current_players: match.current_players,
         created_at: match.created_at,
+        creator_id: match.creator_id,
+        creator_nickname: match.creator_nickname,
         participants: participantsData?.filter(p => p.match_id === match.id) || []
       })) || [];
 
@@ -106,45 +118,36 @@ const Index = () => {
     }
   };
 
-  const handleJoinMatch = async (matchId: string, playerName: string, team: string) => {
+  const fetchRequestCounts = async () => {
+    if (!creatorId) return;
+
     try {
-      // Insert new participant
-      const { error } = await supabase
-        .from('match_participants')
-        .insert({
-          match_id: matchId,
-          participant_name: playerName,
-          team: team
-        });
-      
+      const { data, error } = await supabase
+        .from('match_requests')
+        .select(`
+          match_id,
+          matches!inner(creator_id)
+        `)
+        .eq('matches.creator_id', creatorId)
+        .eq('status', 'pending');
+
       if (error) throw error;
 
-      // Update current_players count
-      const match = matches.find(m => m.id === matchId);
-      if (match) {
-        const { error: updateError } = await supabase
-          .from('matches')
-          .update({ current_players: match.current_players + 1 })
-          .eq('id', matchId);
-        
-        if (updateError) throw updateError;
-      }
+      const counts: Record<string, number> = {};
+      data?.forEach(request => {
+        counts[request.match_id] = (counts[request.match_id] || 0) + 1;
+      });
 
-      // Refresh matches data
-      await fetchMatches();
-      toast({
-        title: "Successfully joined! ⚽",
-        description: `Welcome to the match, ${playerName}!`
-      });
-      setSelectedMatch(null);
+      setRequestCounts(counts);
     } catch (error) {
-      console.error('Error joining match:', error);
-      toast({
-        title: "Error",
-        description: "Failed to join match",
-        variant: "destructive"
-      });
+      console.error('Error fetching request counts:', error);
     }
+  };
+
+  const handleJoinSuccess = () => {
+    setSelectedMatch(null);
+    // Refresh matches data
+    fetchMatches();
   };
 
   const now = new Date();
@@ -196,6 +199,13 @@ const Index = () => {
           <div className="mt-8">
             <CreateMatchButton />
           </div>
+
+          {/* Creator Welcome Message */}
+          {creatorNickname && (
+            <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 max-w-md mx-auto">
+              <p className="text-blue-400 text-sm">Welcome back, {creatorNickname}! 👋</p>
+            </div>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -217,7 +227,9 @@ const Index = () => {
                         key={match.id} 
                         match={match} 
                         isNextMatch={nextMatch?.id === match.id} 
-                        onJoinClick={() => setSelectedMatch(match.id)} 
+                        onJoinClick={() => setSelectedMatch(match.id)}
+                        pendingRequestsCount={requestCounts[match.id] || 0}
+                        isCreator={match.creator_id === creatorId}
                       />
                     ))
                   ) : (
@@ -230,12 +242,12 @@ const Index = () => {
               </Card>
             </div>
 
-            {/* Join Match Form */}
+            {/* Join Request Form */}
             {selectedMatch && (
               <JoinMatchForm 
                 matchId={selectedMatch} 
-                onJoin={handleJoinMatch} 
-                onCancel={() => setSelectedMatch(null)} 
+                onCancel={() => setSelectedMatch(null)}
+                onSuccess={handleJoinSuccess}
               />
             )}
 
@@ -255,6 +267,7 @@ const Index = () => {
                             match={match} 
                             onJoinClick={() => {}}
                             isArchived={true}
+                            isCreator={match.creator_id === creatorId}
                           />
                         ))}
                       </AccordionContent>
@@ -271,6 +284,13 @@ const Index = () => {
             {nextMatch && (
               <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
                 <CountdownTimer match={nextMatch} />
+              </div>
+            )}
+
+            {/* Requests Panel for Creators */}
+            {creatorId && (
+              <div className="animate-fade-in" style={{ animationDelay: '250ms' }}>
+                <RequestsPanel creatorId={creatorId} />
               </div>
             )}
 

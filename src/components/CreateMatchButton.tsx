@@ -1,12 +1,35 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plus, Zap } from "lucide-react";
+import CreateMatchForm from "./CreateMatchForm";
+
 const CreateMatchButton: React.FC = () => {
+  const [showForm, setShowForm] = useState(false);
+
   const handleCreateMatch = () => {
-    // Navigate to create match form - you can implement routing here
-    console.log('Navigate to create match form');
+    setShowForm(true);
   };
-  return <Button onClick={handleCreateMatch} className="group relative overflow-hidden bg-gradient-to-r from-slate-700 via-slate-600 to-green-800 hover:from-slate-800 hover:via-slate-700 hover:to-green-900 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl hover:shadow-green-800/25 transition-all duration-500 transform hover:scale-105 animate-pulse-slow">
+
+  const handleCancel = () => {
+    setShowForm(false);
+  };
+
+  const handleSuccess = () => {
+    setShowForm(false);
+    // Refresh the page to show the new match
+    window.location.reload();
+  };
+
+  if (showForm) {
+    return <CreateMatchForm onCancel={handleCancel} onSuccess={handleSuccess} />;
+  }
+
+  return (
+    <Button 
+      onClick={handleCreateMatch} 
+      className="group relative overflow-hidden bg-gradient-to-r from-slate-700 via-slate-600 to-green-800 hover:from-slate-800 hover:via-slate-700 hover:to-green-900 text-white font-bold py-4 px-8 rounded-2xl shadow-2xl hover:shadow-green-800/25 transition-all duration-500 transform hover:scale-105 animate-pulse-slow"
+    >
       <div className="absolute inset-0 bg-gradient-to-r from-green-700 via-slate-600 to-slate-800 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
       
       <div className="relative flex items-center gap-3">
@@ -22,6 +45,8 @@ const CreateMatchButton: React.FC = () => {
       
       {/* Electric effect */}
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
-    </Button>;
+    </Button>
+  );
 };
+
 export default CreateMatchButton;

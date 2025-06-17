@@ -12,6 +12,8 @@ export interface MatchData {
   max_players: number | null;
   current_players: number;
   created_at: string;
+  creator_id: string | null;
+  creator_nickname: string | null;
   participants: Array<{
     id: string;
     participant_name: string;
@@ -19,4 +21,12 @@ export interface MatchData {
     match_id: string;
     created_at: string;
   }>;
+}
+
+export interface MatchRequest {
+  id: string;
+  match_id: string;
+  participant_name: string;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
 }

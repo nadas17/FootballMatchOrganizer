@@ -41,9 +41,43 @@ export type Database = {
           },
         ]
       }
+      match_requests: {
+        Row: {
+          created_at: string
+          id: string
+          match_id: string
+          participant_name: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          match_id: string
+          participant_name: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          match_id?: string
+          participant_name?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_requests_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matches: {
         Row: {
           created_at: string
+          creator_id: string | null
+          creator_nickname: string | null
           current_players: number
           description: string | null
           id: string
@@ -58,6 +92,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          creator_id?: string | null
+          creator_nickname?: string | null
           current_players?: number
           description?: string | null
           id?: string
@@ -72,6 +108,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          creator_id?: string | null
+          creator_nickname?: string | null
           current_players?: number
           description?: string | null
           id?: string

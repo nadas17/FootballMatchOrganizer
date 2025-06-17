@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, Users, Calendar } from "lucide-react";
+import { MapPin, Clock, Users, Calendar, Bell } from "lucide-react";
 import { MatchData } from "@/types/match";
 
 interface MatchCardProps {
@@ -11,9 +11,18 @@ interface MatchCardProps {
   isNextMatch?: boolean;
   onJoinClick: () => void;
   isArchived?: boolean;
+  pendingRequestsCount?: number;
+  isCreator?: boolean;
 }
 
-const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick, isArchived }) => {
+const MatchCard: React.FC<MatchCardProps> = ({ 
+  match, 
+  isNextMatch, 
+  onJoinClick, 
+  isArchived, 
+  pendingRequestsCount = 0,
+  isCreator = false 
+}) => {
   const [showParticipants, setShowParticipants] = useState(false);
   const isFull = match.current_players >= (match.max_players || 0);
   
@@ -35,11 +44,19 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick, 
                   NEXT MATCH
                 </Badge>
               )}
+              {isCreator && (
+                <Badge className="ml-2 bg-blue-500/20 text-blue-400 border-blue-500/30">
+                  YOUR MATCH
+                </Badge>
+              )}
             </h3>
             <p className="text-white/70 text-sm">{match.description || 'No description'}</p>
+            {match.creator_nickname && (
+              <p className="text-white/50 text-xs mt-1">Created by: {match.creator_nickname}</p>
+            )}
           </div>
           
-          {isNextMatch && (
+          {isNextMatch && !isCreator && (
             <div className="relative">
               <Button
                 onClick={onJoinClick}
@@ -49,6 +66,13 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick, 
                 ⚽
               </Button>
             </div>
+          )}
+
+          {pendingRequestsCount > 0 && isCreator && (
+            <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 animate-pulse flex items-center gap-1">
+              <Bell className="w-3 h-3" />
+              {pendingRequestsCount} Request{pendingRequestsCount > 1 ? 's' : ''}
+            </Badge>
           )}
         </div>
 
@@ -112,7 +136,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick, 
             )}
           </Button>
           
-          {!isNextMatch && !isArchived && (
+          {!isNextMatch && !isArchived && !isCreator && (
             <Button
               onClick={onJoinClick}
               disabled={isFull}
@@ -122,7 +146,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, isNextMatch, onJoinClick, 
                   : 'bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white shadow-lg hover:shadow-emerald-500/25 hover:scale-105'
               }`}
             >
-              {isFull ? 'Match Full' : 'Join Match'}
+              {isFull ? 'Match Full' : 'Request to Join'}
             </Button>
           )}
           {isArchived && (
