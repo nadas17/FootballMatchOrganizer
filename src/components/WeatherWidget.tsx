@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Cloud, Sun, CloudRain, MapPin, Thermometer, Wind, Droplets, CloudSnow } from "lucide-react";
+import { Cloud, Sun, CloudRain, MapPin, Thermometer, Wind, Droplets, CloudSnow, AlertCircle } from "lucide-react";
 
 interface WeatherData {
   temperature: number;
@@ -33,13 +33,24 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
       }
 
       try {
-        const API_KEY = '0bc4fb6a4a0537fb2d71e8f36ebbe3d1';
+        // You need to get a valid OpenWeatherMap API key from https://openweathermap.org/api
+        const API_KEY = 'YOUR_VALID_API_KEY_HERE'; // Please replace with a valid API key
+        
+        if (API_KEY === 'YOUR_VALID_API_KEY_HERE') {
+          setError('API anahtarı yapılandırılmamış');
+          setLoading(false);
+          return;
+        }
+
         const response = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${API_KEY}&units=metric&lang=tr`
         );
 
         if (!response.ok) {
-          throw new Error('Hava durumu bilgisi alınamadı');
+          if (response.status === 401) {
+            throw new Error('Geçersiz API anahtarı - lütfen geçerli bir OpenWeatherMap API anahtarı kullanın');
+          }
+          throw new Error(`Hava durumu API hatası: ${response.status}`);
         }
 
         const data = await response.json();
@@ -53,9 +64,10 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
           windSpeed: Math.round(data.wind.speed * 3.6), // m/s to km/h
           location: location || data.name
         });
+        setError(null);
       } catch (err) {
         console.error('Weather API error:', err);
-        setError('Hava durumu bilgisi alınamadı');
+        setError(err instanceof Error ? err.message : 'Hava durumu bilgisi alınamadı');
       } finally {
         setLoading(false);
       }
@@ -97,8 +109,11 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
     return (
       <Card className={`glass-card border-none shadow-sm ${className}`}>
         <CardContent className="p-2 sm:p-3">
-          <div className="text-white/70 text-xs">
-            Hava durumu bilgisi yüklenemedi
+          <div className="flex items-center gap-1 sm:gap-2 text-orange-400">
+            <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+            <div className="text-xs">
+              {error || 'Hava durumu bilgisi yüklenemedi'}
+            </div>
           </div>
         </CardContent>
       </Card>
