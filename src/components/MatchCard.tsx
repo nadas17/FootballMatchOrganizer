@@ -114,7 +114,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
           </div>
         </div>
 
-        {/* Players Counter */}
+        {/* Players Counter and Join Button */}
         <div className="flex items-center justify-between mb-4">
           <Button
             variant="ghost"
@@ -136,6 +136,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
             )}
           </Button>
           
+          {/* Join Button - Show for all non-archived matches where user is not the creator */}
           {!isArchived && !isCreator && (
             <Button
               onClick={onJoinClick}
@@ -149,6 +150,8 @@ const MatchCard: React.FC<MatchCardProps> = ({
               {isFull ? 'Match Full' : 'Request to Join'}
             </Button>
           )}
+          
+          {/* Archived Badge */}
           {isArchived && (
             <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">
               ARCHIVED
