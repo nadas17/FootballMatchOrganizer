@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Cloud, Sun, CloudRain, MapPin, Thermometer, Wind, Droplets, CloudSnow, AlertCircle } from "lucide-react";
@@ -33,15 +32,8 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
       }
 
       try {
-        // You need to get a valid OpenWeatherMap API key from https://openweathermap.org/api
-        const API_KEY = 'YOUR_VALID_API_KEY_HERE'; // Please replace with a valid API key
+        const API_KEY = '0bc4fb6a4a0537fb2d71e8f36ebbe3d1';
         
-        if (API_KEY === 'YOUR_VALID_API_KEY_HERE') {
-          setError('API anahtarı yapılandırılmamış');
-          setLoading(false);
-          return;
-        }
-
         const response = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${API_KEY}&units=metric&lang=tr`
         );
