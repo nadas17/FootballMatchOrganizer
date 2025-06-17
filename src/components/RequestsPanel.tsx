@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,7 +35,11 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
       if (error) throw error;
 
       const requestsWithMatchTitle = data?.map(request => ({
-        ...request,
+        id: request.id,
+        match_id: request.match_id,
+        participant_name: request.participant_name,
+        status: request.status as 'pending' | 'approved' | 'rejected',
+        created_at: request.created_at,
         match_title: request.matches?.title || 'Untitled Match'
       })) || [];
 
