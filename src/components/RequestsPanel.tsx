@@ -73,21 +73,20 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
 
         if (insertError) throw insertError;
 
-        // Update current_players count
-        const { data: match } = await supabase
+        // Get current participant count and update current_players
+        const { data: participants } = await supabase
+          .from('match_participants')
+          .select('id')
+          .eq('match_id', matchId);
+
+        const actualCount = participants?.length || 0;
+
+        const { error: countError } = await supabase
           .from('matches')
-          .select('current_players')
-          .eq('id', matchId)
-          .single();
+          .update({ current_players: actualCount })
+          .eq('id', matchId);
 
-        if (match) {
-          const { error: countError } = await supabase
-            .from('matches')
-            .update({ current_players: match.current_players + 1 })
-            .eq('id', matchId);
-
-          if (countError) throw countError;
-        }
+        if (countError) throw countError;
       }
 
       toast({

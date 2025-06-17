@@ -24,7 +24,10 @@ const MatchCard: React.FC<MatchCardProps> = ({
   isCreator = false 
 }) => {
   const [showParticipants, setShowParticipants] = useState(false);
-  const isFull = match.current_players >= (match.max_players || 0);
+  
+  // Calculate actual player count from participants array
+  const actualPlayerCount = match.participants.length;
+  const isFull = actualPlayerCount >= (match.max_players || 0);
   
   const teamA = match.participants.filter(p => p.team === 'A');
   const teamB = match.participants.filter(p => p.team === 'B');
@@ -123,7 +126,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
           >
             <Users className="w-4 h-4 mr-2 text-purple-400" />
             <span className="font-semibold">
-              Players: {match.current_players}/{match.max_players || 0}
+              Players: {actualPlayerCount}/{match.max_players || 0}
             </span>
             {showParticipants ? (
               <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
