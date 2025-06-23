@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -151,14 +150,14 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
       if (updateError) throw updateError;
 
       if (action === 'approved') {
-        // Add participant to match with selected team
+        // Add participant to match with selected team and position
         const { error: insertError } = await supabase
           .from('match_participants')
           .insert({
             match_id: matchId,
             participant_name: participantName,
             position: position,
-            team: team // Now we're properly assigning the team that was selected
+            team: team
           });
 
         if (insertError) throw insertError;

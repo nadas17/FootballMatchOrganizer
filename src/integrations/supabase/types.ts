@@ -52,6 +52,7 @@ export type Database = {
           participant_name: string
           position: string | null
           status: string
+          team: string | null
         }
         Insert: {
           created_at?: string
@@ -60,6 +61,7 @@ export type Database = {
           participant_name: string
           position?: string | null
           status?: string
+          team?: string | null
         }
         Update: {
           created_at?: string
@@ -68,6 +70,7 @@ export type Database = {
           participant_name?: string
           position?: string | null
           status?: string
+          team?: string | null
         }
         Relationships: [
           {
