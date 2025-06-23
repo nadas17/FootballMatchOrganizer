@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ interface RequestsPanelProps {
 }
 
 const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
-  const [requests, setRequests] = useState<(MatchRequest & { match_title: string })[]>([]);
+  const [requests, setRequests] = useState<(MatchRequest & { match_title: string, team?: string })[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { toast } = useToast();
@@ -69,6 +70,7 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
         status: request.status as 'pending' | 'approved' | 'rejected',
         created_at: request.created_at,
         position: request.position,
+        team: request.team,
         match_title: request.matches?.title || 'Untitled Match'
       })) || [];
 
@@ -112,9 +114,27 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
     );
   };
 
-  const handleRequest = async (requestId: string, action: 'approved' | 'rejected', matchId: string, participantName: string, position: string | null) => {
+  const getTeamBadge = (team: string | null) => {
+    if (!team) return null;
+    
+    const teamConfig = {
+      'A': { icon: '🔴', color: 'bg-red-500/20 text-red-400 border-red-500/30' },
+      'B': { icon: '🔵', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' }
+    };
+
+    const config = teamConfig[team as keyof typeof teamConfig];
+    if (!config) return null;
+
+    return (
+      <Badge className={`${config.color} text-xs`}>
+        {config.icon} Team {team}
+      </Badge>
+    );
+  };
+
+  const handleRequest = async (requestId: string, action: 'approved' | 'rejected', matchId: string, participantName: string, position: string | null, team: string | null) => {
     try {
-      console.log('Handling request:', { requestId, action, matchId, participantName, position });
+      console.log('Handling request:', { requestId, action, matchId, participantName, position, team });
       
       // Update request status
       const { error: updateError } = await supabase
@@ -125,14 +145,14 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
       if (updateError) throw updateError;
 
       if (action === 'approved') {
-        // Add participant to match - let them choose team when they join
+        // Add participant to match with selected team
         const { error: insertError } = await supabase
           .from('match_participants')
           .insert({
             match_id: matchId,
             participant_name: participantName,
             position: position,
-            team: null // Team will be assigned later
+            team: team // Now we're properly assigning the team that was selected
           });
 
         if (insertError) throw insertError;
@@ -223,6 +243,7 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
                   <p className="text-white/70 text-sm">{request.match_title}</p>
                   <div className="flex items-center gap-2 mt-1">
                     {getPositionBadge(request.position)}
+                    {getTeamBadge(request.team)}
                     <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       Pending
@@ -237,7 +258,7 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
               
               <div className="flex gap-2">
                 <Button
-                  onClick={() => handleRequest(request.id, 'approved', request.match_id, request.participant_name, request.position)}
+                  onClick={() => handleRequest(request.id, 'approved', request.match_id, request.participant_name, request.position, request.team)}
                   className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
                   size="sm"
                 >
@@ -245,7 +266,7 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
                   Approve
                 </Button>
                 <Button
-                  onClick={() => handleRequest(request.id, 'rejected', request.match_id, request.participant_name, request.position)}
+                  onClick={() => handleRequest(request.id, 'rejected', request.match_id, request.participant_name, request.position, request.team)}
                   variant="outline"
                   className="flex-1 border-red-500/50 text-red-400 hover:bg-red-500/10"
                   size="sm"
