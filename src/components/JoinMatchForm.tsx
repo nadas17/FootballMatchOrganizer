@@ -130,82 +130,84 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
   };
 
   return (
-    <Card className="glass-card border-none shadow-2xl animate-fade-in">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-xl font-orbitron text-white flex items-center gap-2">
-          <Users className="w-5 h-5 text-emerald-400" />
-          Request to Join Match
-        </CardTitle>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onCancel}
-          className="text-white/70 hover:text-white hover:bg-white/10 rounded-full"
-        >
-          <X className="w-4 h-4" />
-        </Button>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-          <div className="flex items-center gap-2 text-blue-400 text-sm">
-            <Clock className="w-4 h-4" />
-            <span>Your request will be sent to the match creator for approval</span>
-          </div>
-        </div>
-
-        {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-            <div className="flex items-center gap-2 text-red-400 text-sm">
-              <AlertCircle className="w-4 h-4" />
-              <span>{error}</span>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <Card className="glass-card border-none shadow-2xl animate-fade-in w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <CardHeader className="flex flex-row items-center justify-between pb-4">
+          <CardTitle className="text-lg sm:text-xl font-orbitron text-white flex items-center gap-2">
+            <Users className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+            <span className="truncate">Request to Join Match</span>
+          </CardTitle>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onCancel}
+            className="text-white/70 hover:text-white hover:bg-white/10 rounded-full flex-shrink-0"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+            <div className="flex items-start gap-2 text-blue-400 text-sm">
+              <Clock className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <span className="leading-relaxed">Your request will be sent to the match creator for approval</span>
             </div>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="playerName" className="text-white font-semibold">
-              Your Name <span className="text-red-400">*</span>
-            </Label>
-            <Input
-              id="playerName"
-              type="text"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="Enter your name"
-              className="glass-input"
+          {error && (
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+              <div className="flex items-start gap-2 text-red-400 text-sm">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span className="leading-relaxed">{error}</span>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="playerName" className="text-white font-semibold text-sm">
+                Your Name <span className="text-red-400">*</span>
+              </Label>
+              <Input
+                id="playerName"
+                type="text"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                placeholder="Enter your name"
+                className="glass-input text-sm"
+                required
+              />
+            </div>
+
+            <TeamPositionSelector
+              team={team}
+              position={position}
+              onTeamChange={setTeam}
+              onPositionChange={setPosition}
               required
             />
-          </div>
 
-          <TeamPositionSelector
-            team={team}
-            position={position}
-            onTeamChange={setTeam}
-            onPositionChange={setPosition}
-            required
-          />
-
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              className="flex-1 border-white/20 text-white/70 hover:bg-white/10 hover:text-white"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={!playerName.trim() || !position || !team || loading}
-              className="flex-1 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-bold shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-            >
-              {loading ? 'Sending...' : 'Send Request ⚽'}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                className="border-white/20 text-white/70 hover:bg-white/10 hover:text-white text-sm order-2 sm:order-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={!playerName.trim() || !position || !team || loading}
+                className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-bold shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 text-sm order-1 sm:order-2"
+              >
+                {loading ? 'Sending...' : 'Send Request ⚽'}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
