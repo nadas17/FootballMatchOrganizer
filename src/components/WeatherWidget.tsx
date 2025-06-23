@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent } from '../ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Droplets, Wind, Sun, Cloud, CloudRain, CloudSnow, AlertCircle } from 'lucide-react';
 
 interface WeatherWidgetProps {
