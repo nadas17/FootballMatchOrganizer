@@ -95,65 +95,27 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
 
   if (loading) {
     return (
-      <Card className={`glass-card border-none shadow-sm ${className}`}>
-        <CardContent className="p-3 sm:p-4">
-          <div className="animate-pulse space-y-2">
-            <div className="h-4 bg-white/20 rounded w-2/3"></div>
-            <div className="h-6 bg-white/20 rounded w-1/2"></div>
-            <div className="h-3 bg-white/20 rounded w-full"></div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className={`weather-box flex items-center gap-2 rounded bg-black/30 px-3 py-1 text-sm w-fit mx-auto ${className}`}>
+        <span className="animate-pulse text-gray-300">Loading...</span>
+      </div>
     );
   }
 
   if (error || !weather) {
     return (
-      <Card className={`glass-card border-none shadow-sm ${className} bg-red-500/20`}>
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex items-center gap-2 text-orange-300">
-            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-            <div className="text-xs sm:text-sm">
-              {error || 'Could not load weather information'}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className={`weather-box flex items-center gap-2 rounded bg-red-500/20 px-3 py-1 text-xs w-fit mx-auto ${className}`}>
+        <AlertCircle className="w-4 h-4 text-orange-300" />
+        <span>{error || 'Weather unavailable'}</span>
+      </div>
     );
   }
 
   return (
-    <Card className={`glass-card border-none shadow-sm ${className}`}>
-      <CardContent className="p-3 sm:p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400 flex-shrink-0" />
-          <span className="text-white/80 text-sm font-medium truncate">{weather.location}</span>
-        </div>
-        
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            {getWeatherIcon(weather.condition)}
-            <div>
-              <div className="text-xl sm:text-3xl font-bold text-white">
-                {weather.temperature}°C
-              </div>
-              <div className="text-white/70 text-xs sm:text-sm capitalize">{weather.description}</div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex justify-between text-xs sm:text-sm text-white/70">
-          <div className="flex items-center gap-1.5">
-            <Droplets className="w-3 h-3 sm:w-4 sm:h-4 text-blue-300" />
-            <span>{weather.humidity}%</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Wind className="w-3 h-3 sm:w-4 sm:h-4 text-green-300" />
-            <span>{weather.windSpeed} km/h</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <div className={`weather-box flex items-center gap-2 rounded bg-black/30 px-3 py-1 text-sm w-fit mx-auto ${className}`}>
+      {getWeatherIcon(weather.condition)}
+      <span className="font-bold">{weather.temperature}°C</span>
+      <span className="capitalize text-gray-300">{weather.description}</span>
+    </div>
   );
 };
 
