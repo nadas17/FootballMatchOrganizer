@@ -111,7 +111,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
   }
 
   return (
-    <div className={`weather-box flex items-center gap-2 rounded bg-black/30 px-3 py-1 text-sm w-fit mx-auto ${className}`}>
+    <div className={`weather-box flex items-center gap-2 rounded px-3 py-1 text-sm w-fit mx-auto ${className}`}>
       {getWeatherIcon(weather.condition)}
       <span className="font-bold">{weather.temperature}°C</span>
       <span className="capitalize text-gray-300">{weather.description}</span>
