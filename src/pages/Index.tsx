@@ -9,6 +9,7 @@ import CreateMatchButton from "@/components/CreateMatchButton";
 import JoinMatchForm from "@/components/JoinMatchForm";
 import RequestsPanel from "@/components/RequestsPanel";
 import NotificationBanner from "@/components/NotificationBanner";
+import WeatherWidget from "@/components/WeatherWidget";
 import { supabase } from "@/integrations/supabase/client";
 import { MatchData, MatchRequest } from "@/types/match";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -369,28 +370,27 @@ const Index: React.FC = () => {
               </div>
             )}
 
-            {/* Weather Widget */}
+            {/* Weather Widget - Playing Conditions */}
             <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
               <Card className="glass-card border-none shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-xl font-orbitron text-white">Playing Conditions</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center">
-                    <div className="text-4xl mb-2">⛅</div>
-                    <div className="text-2xl font-bold text-white">18°C</div>
-                    <div className="text-white/70">Perfect for football!</div>
-                    <div className="mt-4 space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-white/70">Wind</span>
-                        <span className="text-white">12 km/h</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-white/70">Humidity</span>
-                        <span className="text-white">65%</span>
-                      </div>
+                  {nextMatch && nextMatch.location_lat && nextMatch.location_lng ? (
+                    <WeatherWidget
+                      lat={nextMatch.location_lat}
+                      lng={nextMatch.location_lng}
+                      location={nextMatch.location || undefined}
+                      className="w-full"
+                    />
+                  ) : (
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">🌤️</div>
+                      <div className="text-2xl font-bold text-white">Weather Info</div>
+                      <div className="text-white/70 mt-2">No upcoming match with location</div>
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
