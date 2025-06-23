@@ -18,10 +18,8 @@ interface WeatherData {
   location: string;
 }
 
-// IMPORTANT: Move your API Key to an environment variable file (.env.local)
-// For example, in a Vite project: VITE_OPENWEATHER_API_KEY='your_real_api_key'
-// Then access it with: import.meta.env.VITE_OPENWEATHER_API_KEY
-const API_KEY = '0bc4fb6a4a0537fb2d71e8f36ebbe3d1';
+// Use environment variable for API key security
+const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
 const getWeatherIcon = (condition: string) => {
   switch (condition.toLowerCase()) {
@@ -54,21 +52,20 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
 
       if (!API_KEY) {
          setLoading(false);
-         setError('OpenWeatherMap API key is not set.');
+         setError('Weather service temporarily unavailable');
          return;
       }
 
       try {
-        // Use `lang=en` to get the description in English.
         const response = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${API_KEY}&units=metric&lang=en`
         );
 
         if (!response.ok) {
           if (response.status === 401) {
-            throw new Error('Invalid API key. Please check your key.');
+            throw new Error('Weather service authentication failed');
           }
-          throw new Error(`Weather API error: ${response.status} ${response.statusText}`);
+          throw new Error(`Weather service error: ${response.status}`);
         }
 
         const data = await response.json();
@@ -78,7 +75,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
           condition: data.weather[0].main,
           description: data.weather[0].description,
           humidity: data.main.humidity,
-          windSpeed: Math.round(data.wind.speed * 3.6), // API with units=metric gives m/s, convert to km/h
+          windSpeed: Math.round(data.wind.speed * 3.6),
           location: location || data.name
         });
         setError(null);
@@ -95,35 +92,61 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
 
   if (loading) {
     return (
-      <div className={`weather-box flex items-center gap-2 rounded px-3 py-1 text-sm w-fit mx-auto ${className}`}>
-        <span className="animate-pulse text-gray-300">Loading...</span>
-      </div>
+      <Card className={`glass-card border-none shadow-sm ${className}`}>
+        <CardContent className="p-3 sm:p-4">
+          <div className="animate-pulse space-y-2">
+            <div className="h-4 bg-white/20 rounded w-2/3"></div>
+            <div className="h-6 bg-white/20 rounded w-1/2"></div>
+            <div className="h-3 bg-white/20 rounded w-full"></div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   if (error || !weather) {
     return (
-      <div className={`weather-box flex items-center gap-2 rounded bg-red-500/20 px-3 py-1 text-xs w-fit mx-auto ${className}`}>
-        <AlertCircle className="w-4 h-4 text-orange-300" />
-        <span>{error || 'Weather unavailable'}</span>
-      </div>
+      <Card className={`glass-card border-none shadow-sm ${className} bg-red-500/20`}>
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 text-orange-300">
+            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+            <div className="text-xs sm:text-sm">
+              {error || 'Could not load weather information'}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
-  // Maç kartı içindeki sade kutu
   return (
-    <Card className={`${className}`}>
-      <CardContent className="p-4">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
+    <Card className={`glass-card border-none shadow-sm ${className}`}>
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400 flex-shrink-0" />
+          <span className="text-white/80 text-sm font-medium truncate">{weather.location}</span>
+        </div>
+        
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
             {getWeatherIcon(weather.condition)}
-            <span className="font-bold text-green-500">{weather.temperature}°C</span>
-            <span className="font-bold capitalize text-green-500">{weather.description}</span>
+            <div>
+              <div className="text-xl sm:text-3xl font-bold text-white">
+                {weather.temperature}°C
+              </div>
+              <div className="text-white/70 text-xs sm:text-sm capitalize">{weather.description}</div>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-3 text-sm mt-2">
-            <span><MapPin className="inline w-4 h-4 mr-1" />{weather.location}</span>
-            <span><Droplets className="inline w-4 h-4 mr-1" />{weather.humidity}%</span>
-            <span><Wind className="inline w-4 h-4 mr-1" />{weather.windSpeed} km/h</span>
+        </div>
+        
+        <div className="flex justify-between text-xs sm:text-sm text-white/70">
+          <div className="flex items-center gap-1.5">
+            <Droplets className="w-3 h-3 sm:w-4 sm:h-4 text-blue-300" />
+            <span>{weather.humidity}%</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Wind className="w-3 h-3 sm:w-4 sm:h-4 text-green-300" />
+            <span>{weather.windSpeed} km/h</span>
           </div>
         </div>
       </CardContent>

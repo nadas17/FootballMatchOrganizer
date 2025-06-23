@@ -7,6 +7,7 @@ import { X, Users, Clock, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import TeamPositionSelector from "./TeamPositionSelector";
+import { validatePlayerName, sanitizeString } from "@/utils/validation";
 
 interface JoinMatchFormProps {
   matchId: string;
@@ -24,10 +25,23 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!playerName.trim() || !position || !team) {
+    
+    // Enhanced validation
+    const sanitizedName = sanitizeString(playerName);
+    
+    if (!validatePlayerName(sanitizedName)) {
+      toast({
+        title: "Invalid Name",
+        description: "Name must be 2-50 characters and contain only letters, numbers, spaces, hyphens, and underscores",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!position || !team) {
       toast({
         title: "Missing Information",
-        description: "Please enter your name, select a team, and choose a position",
+        description: "Please select a team and choose a position",
         variant: "destructive"
       });
       return;
@@ -39,7 +53,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
     try {
       console.log('=== JOIN REQUEST START ===');
       console.log('Match ID:', matchId);
-      console.log('Player Name:', playerName.trim());
+      console.log('Player Name:', sanitizedName);
       console.log('Team:', team);
       console.log('Position:', position);
       
@@ -49,7 +63,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
         .from('match_requests')
         .select('id')
         .eq('match_id', matchId)
-        .eq('participant_name', playerName.trim())
+        .eq('participant_name', sanitizedName)
         .eq('status', 'pending')
         .maybeSingle();
 
@@ -75,9 +89,9 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
       console.log('Creating new join request...');
       const requestData = {
         match_id: matchId,
-        participant_name: playerName.trim(),
+        participant_name: sanitizedName,
         position: position,
-        team: team, // Now including team in the request data
+        team: team,
         status: 'pending' as const
       };
       console.log('Request data:', requestData);
@@ -173,8 +187,9 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
                 type="text"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
-                placeholder="Enter your name"
+                placeholder="Enter your name (2-50 characters)"
                 className="glass-input text-sm"
+                maxLength={50}
                 required
               />
             </div>

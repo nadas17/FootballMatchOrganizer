@@ -18,10 +18,8 @@ interface WeatherWidgetProps {
   className?: string;
 }
 
-// IMPORTANT: Move your API Key to an environment variable file (.env.local)
-// For example, in a Vite project: VITE_OPENWEATHER_API_KEY='your_real_api_key'
-// Then access it with: import.meta.env.VITE_OPENWEATHER_API_KEY
-const API_KEY = '571e20a2cc3e600710eb33f26e1b63c3'; // Replace with your actual key or use an environment variable
+// Use environment variable for API key security
+const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
 const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, className = "" }) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -36,23 +34,22 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
         return;
       }
 
-      if (!API_KEY || API_KEY === 'your_real_api_key') {
+      if (!API_KEY) {
          setLoading(false);
-         setError('OpenWeatherMap API key is not set.');
+         setError('Weather service temporarily unavailable');
          return;
       }
 
       try {
-        // Use `lang=en` to get the description in English.
         const response = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${API_KEY}&units=metric&lang=en`
         );
 
         if (!response.ok) {
           if (response.status === 401) {
-            throw new Error('Invalid API key. Please check your key.');
+            throw new Error('Weather service authentication failed');
           }
-          throw new Error(`Weather API error: ${response.status} ${response.statusText}`);
+          throw new Error(`Weather service error: ${response.status}`);
         }
 
         const data = await response.json();
@@ -62,7 +59,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
           condition: data.weather[0].main,
           description: data.weather[0].description,
           humidity: data.main.humidity,
-          windSpeed: Math.round(data.wind.speed * 3.6), // API with units=metric gives m/s, convert to km/h
+          windSpeed: Math.round(data.wind.speed * 3.6),
           location: location || data.name
         });
         setError(null);

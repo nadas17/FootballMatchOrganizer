@@ -1,73 +1,128 @@
-# Welcome to your Lovable project
+# Football Warriors Organization - Web Application
 
-## Project info
+A modern web application for organizing football matches with real-time features, weather integration, and Google Maps support.
 
-**URL**: https://lovable.dev/projects/0167dfb1-1ff6-4e81-8029-b201ab3a50d8
+## 🚀 Features
 
-## How can I edit this code?
+- **Match Creation**: Create football matches with detailed information
+- **Team Management**: Organize players into teams with positions
+- **Request System**: Join requests with approval workflow
+- **Real-time Updates**: Live notifications for match creators
+- **Weather Integration**: Current weather conditions for match locations
+- **Google Maps**: Interactive maps for match venues
+- **Responsive Design**: Mobile-first responsive UI
+- **Modern UI**: Glass-morphism design with animations
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
+- **Frontend**: React 18, TypeScript, Tailwind CSS
+- **UI Components**: Shadcn/UI, Radix UI
+- **Backend**: Supabase (PostgreSQL, Real-time subscriptions)
+- **APIs**: OpenWeatherMap, Google Maps
+- **Build Tool**: Vite
+- **Deployment**: Ready for Vercel/Netlify
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/0167dfb1-1ff6-4e81-8029-b201ab3a50d8) and start prompting.
+## 🔧 Setup & Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
+- Node.js 18+ and npm
+- Supabase account
+- OpenWeatherMap API key
+- Google Maps API key
 
-**Use your preferred IDE**
+### Environment Variables
+Create `.env.local` file:
+```env
+VITE_OPENWEATHER_API_KEY=your_openweather_api_key
+VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Installation
+```bash
+# Clone repository
+git clone [repository-url]
+cd WEB-app-Football-Organizer-interaction
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+# Install dependencies
+npm install
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Database Setup
+The application uses Supabase with these tables:
+- `matches` - Match information
+- `match_participants` - Approved participants
+- `match_requests` - Join requests
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📱 Usage
 
-**Use GitHub Codespaces**
+### For Match Creators
+1. Click "Create a match event"
+2. Fill in match details (title, date, time, location)
+3. Set maximum players and price
+4. Manage join requests in the sidebar
+5. Approve/reject participants
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### For Players
+1. Browse available matches
+2. Click "Request to Join" 
+3. Select team (A/B) and position
+4. Wait for creator approval
+5. Check match details and weather
 
-## What technologies are used for this project?
+## 🔒 Security Features
 
-This project is built with:
+- Input validation and sanitization
+- SQL injection prevention
+- XSS protection
+- Environment variable usage for API keys
+- Error handling and logging
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🚀 Performance Optimizations
 
-## How can I deploy this project?
+- Code splitting and lazy loading
+- Image optimization
+- Caching strategies
+- Real-time subscriptions
+- Responsive design
 
-Simply open [Lovable](https://lovable.dev/projects/0167dfb1-1ff6-4e81-8029-b201ab3a50d8) and click on Share -> Publish.
+## 📊 Architecture
 
-## Can I connect a custom domain to my Lovable project?
+```
+src/
+├── components/          # React components
+├── pages/              # Page components
+├── types/              # TypeScript definitions
+├── utils/              # Utility functions
+├── integrations/       # Supabase integration
+└── lib/                # Shared libraries
+```
 
-Yes, you can!
+## 🤝 Contributing
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1. Fork the repository
+2. Create feature branch
+3. Follow code style guidelines
+4. Add tests for new features
+5. Submit pull request
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🐛 Known Issues
+
+- Weather service fallback needed
+- Mobile map interaction improvements
+- Offline functionality
+
+## 🔮 Future Enhancements
+
+- User authentication system
+- Push notifications
+- Chat functionality
+- Match statistics
+- Payment integration
+- Multi-language support

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { X, Calendar, Clock, Users, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import GooglePlacesAutocomplete from "./GooglePlacesAutocomplete";
+import { validatePlayerName, validateMatchTitle, validateDescription, validateLocation, validatePrice, validateMaxPlayers, sanitizeString } from "@/utils/validation";
 
 interface CreateMatchFormProps {
   onCancel: () => void;
@@ -52,10 +52,61 @@ const CreateMatchForm: React.FC<CreateMatchFormProps> = ({ onCancel, onSuccess }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.creator_nickname.trim()) {
+    // Enhanced validation
+    const sanitizedNickname = sanitizeString(formData.creator_nickname);
+    const sanitizedTitle = sanitizeString(formData.title);
+    const sanitizedDescription = sanitizeString(formData.description);
+    const sanitizedLocation = sanitizeString(formData.location);
+    
+    if (!validatePlayerName(sanitizedNickname)) {
       toast({
-        title: "Error",
-        description: "Creator nickname is required",
+        title: "Invalid Nickname",
+        description: "Nickname must be 2-50 characters and contain only letters, numbers, spaces, hyphens, and underscores",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!validateMatchTitle(sanitizedTitle)) {
+      toast({
+        title: "Invalid Title",
+        description: "Title must be less than 100 characters",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!validateDescription(sanitizedDescription)) {
+      toast({
+        title: "Invalid Description",
+        description: "Description must be less than 500 characters",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!validateLocation(sanitizedLocation)) {
+      toast({
+        title: "Invalid Location",
+        description: "Location must be less than 200 characters",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!validatePrice(formData.price_per_player)) {
+      toast({
+        title: "Invalid Price",
+        description: "Price must be between 0 and 1000 zł",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!validateMaxPlayers(formData.max_players)) {
+      toast({
+        title: "Invalid Max Players",
+        description: "Max players must be between 2 and 22",
         variant: "destructive"
       });
       return;
@@ -67,17 +118,17 @@ const CreateMatchForm: React.FC<CreateMatchFormProps> = ({ onCancel, onSuccess }
       const creatorId = crypto.randomUUID();
       
       const matchData = {
-        title: formData.title || null,
-        description: formData.description || null,
+        title: sanitizedTitle || null,
+        description: sanitizedDescription || null,
         match_date: formData.match_date || null,
         match_time: formData.match_time || null,
-        location: formData.location || null,
+        location: sanitizedLocation || null,
         location_lat: formData.location_lat,
         location_lng: formData.location_lng,
         max_players: formData.max_players ? parseInt(formData.max_players) : null,
         price_per_player: formData.price_per_player ? parseFloat(formData.price_per_player) : null,
         creator_id: creatorId,
-        creator_nickname: formData.creator_nickname.trim()
+        creator_nickname: sanitizedNickname
       };
 
       console.log('Submitting match data:', matchData);
@@ -90,12 +141,12 @@ const CreateMatchForm: React.FC<CreateMatchFormProps> = ({ onCancel, onSuccess }
 
       toast({
         title: "Match Created! ⚽",
-        description: `Match "${formData.title}" created successfully!`
+        description: `Match "${sanitizedTitle}" created successfully!`
       });
 
       // Store creator info in localStorage for managing requests
       localStorage.setItem('football_creator_id', creatorId);
-      localStorage.setItem('football_creator_nickname', formData.creator_nickname.trim());
+      localStorage.setItem('football_creator_nickname', sanitizedNickname);
 
       onSuccess();
     } catch (error) {
@@ -139,8 +190,9 @@ const CreateMatchForm: React.FC<CreateMatchFormProps> = ({ onCancel, onSuccess }
                 type="text"
                 value={formData.creator_nickname}
                 onChange={handleInputChange}
-                placeholder="Your nickname"
+                placeholder="Your nickname (2-50 characters)"
                 className="glass-input"
+                maxLength={50}
                 required
               />
             </div>
@@ -157,6 +209,7 @@ const CreateMatchForm: React.FC<CreateMatchFormProps> = ({ onCancel, onSuccess }
                 onChange={handleInputChange}
                 placeholder="Friday Evening Match"
                 className="glass-input"
+                maxLength={100}
               />
             </div>
           </div>
@@ -172,6 +225,7 @@ const CreateMatchForm: React.FC<CreateMatchFormProps> = ({ onCancel, onSuccess }
               onChange={handleInputChange}
               placeholder="Match details..."
               className="glass-input min-h-[80px]"
+              maxLength={500}
             />
           </div>
 
