@@ -16,7 +16,6 @@ interface WeatherWidgetProps {
   lng?: number;
   location?: string;
   className?: string;
-  detailed?: boolean; // yeni prop
 }
 
 // IMPORTANT: Move your API Key to an environment variable file (.env.local)
@@ -24,7 +23,7 @@ interface WeatherWidgetProps {
 // Then access it with: import.meta.env.VITE_OPENWEATHER_API_KEY
 const API_KEY = '0bc4fb6a4a0537fb2d71e8f36ebbe3d1';
 
-const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, className = "", detailed }) => {
+const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, className = "" }) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -111,16 +110,17 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
     );
   }
 
-  if (detailed) {
-    // Ayrıntılı kutu (ör: sağ alt köşe için)
-    return (
-      <div className={`weather-box flex flex-col items-start gap-2 rounded-lg shadow-lg bg-white/80 border border-gray-200 px-4 py-3 text-base max-w-xs ${className}`}>
-        <div className="flex items-center gap-3">
-          {getWeatherIcon(weather.condition)}
-          <span className="text-2xl font-bold text-green-500">{weather.temperature}°C</span>
-          <span className="font-bold capitalize text-green-500">{weather.description}</span>
-        </div>
-        <div className="flex items-center gap-4 text-xs text-green-700 mt-1">
+  // Maç kartı içindeki sade kutu
+  return (
+    <div className={`weather-box flex items-center gap-2 rounded px-3 py-1 text-sm w-fit mx-auto ${className}`}>
+      {getWeatherIcon(weather.condition)}
+      <span className="font-bold text-green-500">{weather.temperature}°C</span>
+      <span className="font-bold capitalize text-green-500">{weather.description}</span>
+    </div>
+  );
+};
+
+export default WeatherWidget;
           <span><MapPin className="inline w-4 h-4 mr-1" />{weather.location}</span>
           <span><Droplets className="inline w-4 h-4 mr-1" />{weather.humidity}%</span>
           <span><Wind className="inline w-4 h-4 mr-1" />{weather.windSpeed} km/h</span>
