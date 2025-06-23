@@ -1,17 +1,17 @@
-# Football Warriors Organization - Web Application
+# Pitch Masters Elite Football Club - Web Application
 
-A modern web application for organizing football matches with real-time features, weather integration, and Google Maps support.
+A professional web application for organizing football matches with real-time features, weather integration, and Google Maps support for the premier football community.
 
 ## 🚀 Features
 
-- **Match Creation**: Create football matches with detailed information
-- **Team Management**: Organize players into teams with positions
-- **Request System**: Join requests with approval workflow
-- **Real-time Updates**: Live notifications for match creators
+- **Match Creation**: Create professional football matches with detailed information
+- **Elite Team Management**: Organize skilled players into competitive teams
+- **Request System**: Exclusive join requests with approval workflow
+- **Real-time Updates**: Live notifications for match organizers
 - **Weather Integration**: Current weather conditions for match locations
-- **Google Maps**: Interactive maps for match venues
+- **Google Maps**: Interactive maps for premium match venues
 - **Responsive Design**: Mobile-first responsive UI
-- **Modern UI**: Glass-morphism design with animations
+- **Modern UI**: Professional glass-morphism design with animations
 
 ## 🛠️ Tech Stack
 
@@ -58,19 +58,19 @@ The application uses Supabase with these tables:
 
 ## 📱 Usage
 
-### For Match Creators
+### For Match Organizers
 1. Click "Create a match event"
 2. Fill in match details (title, date, time, location)
-3. Set maximum players and price
-4. Manage join requests in the sidebar
-5. Approve/reject participants
+3. Set maximum players and entry requirements
+4. Manage join requests in the management panel
+5. Approve/reject participants based on skill level
 
-### For Players
-1. Browse available matches
+### For Club Members
+1. Browse available elite matches
 2. Click "Request to Join" 
-3. Select team (A/B) and position
-4. Wait for creator approval
-5. Check match details and weather
+3. Select preferred team (A/B) and position
+4. Wait for organizer approval
+5. Check match details and weather conditions
 
 ## 🔒 Security Features
 
@@ -120,9 +120,9 @@ This project is licensed under the MIT License.
 
 ## 🔮 Future Enhancements
 
-- User authentication system
-- Push notifications
-- Chat functionality
-- Match statistics
-- Payment integration
-- Multi-language support
+- Premium membership system
+- Player rating and statistics
+- Tournament organization
+- Skill-based matchmaking
+- Professional coaching integration
+- League management system
