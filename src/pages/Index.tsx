@@ -239,7 +239,7 @@ const Index: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-x-hidden">
       {/* Stadium Background Image */}
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
         backgroundImage: `url('/lovable-uploads/ff1b8d41-7e80-4428-b2cf-e467c86fc867.png')`
@@ -248,7 +248,7 @@ const Index: React.FC = () => {
         <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-8">
+      <div className="relative z-10 container mx-auto px-2 sm:px-4 py-6 sm:py-8">
         {/* Hero Section */}
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent animate-gradient-x mb-4 font-orbitron">FOOTBALL WARRIORS</h1>
@@ -278,7 +278,7 @@ const Index: React.FC = () => {
           />
         )}
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Upcoming Matches Section */}
