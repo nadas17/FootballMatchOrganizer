@@ -21,7 +21,7 @@ interface WeatherWidgetProps {
 // IMPORTANT: Move your API Key to an environment variable file (.env.local)
 // For example, in a Vite project: VITE_OPENWEATHER_API_KEY='your_real_api_key'
 // Then access it with: import.meta.env.VITE_OPENWEATHER_API_KEY
-const API_KEY = '571e20a2cc3e600710eb33f26e1b63c3'; // Replace with your actual key or use an environment variable
+const API_KEY = '0bc4fb6a4a0537fb2d71e8f36ebbe3d1';
 
 const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, className = "" }) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -36,7 +36,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
         return;
       }
 
-      if (!API_KEY || API_KEY === 'your_real_api_key') {
+      if (!API_KEY) {
          setLoading(false);
          setError('OpenWeatherMap API key is not set.');
          return;
