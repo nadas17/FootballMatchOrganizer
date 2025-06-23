@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -78,6 +77,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
         match_id: matchId,
         participant_name: playerName.trim(),
         position: position,
+        team: team, // Now including team in the request data
         status: 'pending' as const
       };
       console.log('Request data:', requestData);

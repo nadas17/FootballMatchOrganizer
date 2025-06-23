@@ -30,5 +30,6 @@ export interface MatchRequest {
   participant_name: string;
   status: 'pending' | 'approved' | 'rejected';
   position: string | null;
+  team: string | null; // Added team field to the interface
   created_at: string;
 }
