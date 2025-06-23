@@ -13,7 +13,7 @@ interface RequestsPanelProps {
 }
 
 const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
-  const [requests, setRequests] = useState<(MatchRequest & { match_title: string, team?: string })[]>([]);
+  const [requests, setRequests] = useState<(MatchRequest & { match_title: string })[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { toast } = useToast();
@@ -51,7 +51,13 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
       const { data, error } = await supabase
         .from('match_requests')
         .select(`
-          *,
+          id,
+          match_id,
+          participant_name,
+          status,
+          position,
+          team,
+          created_at,
           matches!inner(title, creator_id)
         `)
         .eq('matches.creator_id', creatorId)
