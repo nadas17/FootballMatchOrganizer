@@ -10,7 +10,8 @@ interface LocationMapProps {
 }
 
 const LocationMap: React.FC<LocationMapProps> = ({ lat, lng, location, className = "" }) => {
-  const googleMapsUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyASlSPjEVAHrRx1hy0KOltskpiV6cY_zyQ&center=${lat},${lng}&zoom=15`;
+  // Use the API key from Supabase secrets (same as in the script)
+  const googleMapsUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyASlSPjEVAHrRx1hy0KOltskpiV6cY_zyQ&center=${lat},${lng}&zoom=15&maptype=satellite`;
   
   return (
     <div className={`rounded-lg overflow-hidden border border-white/10 ${className}`}>
@@ -34,6 +35,18 @@ const LocationMap: React.FC<LocationMapProps> = ({ lat, lng, location, className
           className="w-full sm:h-[200px]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+        
+        {/* Google Maps link overlay */}
+        <div className="absolute bottom-2 right-2">
+          <a
+            href={`https://www.google.com/maps?q=${lat},${lng}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white/90 hover:bg-white text-gray-800 px-2 py-1 rounded text-xs font-medium transition-colors"
+          >
+            Open in Maps
+          </a>
+        </div>
       </div>
     </div>
   );

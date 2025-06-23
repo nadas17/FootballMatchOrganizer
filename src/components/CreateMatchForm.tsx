@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { X, Calendar, Clock, MapPin, Users, DollarSign } from "lucide-react";
+import { X, Calendar, Clock, Users, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import GooglePlacesAutocomplete from "./GooglePlacesAutocomplete";
 
 interface CreateMatchFormProps {
   onCancel: () => void;
@@ -21,6 +22,8 @@ const CreateMatchForm: React.FC<CreateMatchFormProps> = ({ onCancel, onSuccess }
     match_date: '',
     match_time: '',
     location: '',
+    location_lat: null as number | null,
+    location_lng: null as number | null,
     max_players: '',
     price_per_player: '',
     creator_nickname: ''
@@ -33,6 +36,16 @@ const CreateMatchForm: React.FC<CreateMatchFormProps> = ({ onCancel, onSuccess }
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleLocationSelect = (place: { name: string; lat: number; lng: number }) => {
+    console.log('Location selected:', place);
+    setFormData(prev => ({
+      ...prev,
+      location: place.name,
+      location_lat: place.lat,
+      location_lng: place.lng
     }));
   };
 
@@ -59,11 +72,15 @@ const CreateMatchForm: React.FC<CreateMatchFormProps> = ({ onCancel, onSuccess }
         match_date: formData.match_date || null,
         match_time: formData.match_time || null,
         location: formData.location || null,
+        location_lat: formData.location_lat,
+        location_lng: formData.location_lng,
         max_players: formData.max_players ? parseInt(formData.max_players) : null,
         price_per_player: formData.price_per_player ? parseFloat(formData.price_per_player) : null,
         creator_id: creatorId,
         creator_nickname: formData.creator_nickname.trim()
       };
+
+      console.log('Submitting match data:', matchData);
 
       const { error } = await supabase
         .from('matches')
@@ -191,19 +208,21 @@ const CreateMatchForm: React.FC<CreateMatchFormProps> = ({ onCancel, onSuccess }
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location" className="text-white font-semibold flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
+            <Label className="text-white font-semibold">
               Location
             </Label>
-            <Input
-              id="location"
-              name="location"
-              type="text"
+            <GooglePlacesAutocomplete
+              onPlaceSelect={handleLocationSelect}
               value={formData.location}
-              onChange={handleInputChange}
-              placeholder="Stadium or field location"
+              onChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
+              placeholder="Search for stadium or field location"
               className="glass-input"
             />
+            {formData.location_lat && formData.location_lng && (
+              <p className="text-green-400 text-sm">
+                ✓ Location coordinates: {formData.location_lat.toFixed(6)}, {formData.location_lng.toFixed(6)}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
