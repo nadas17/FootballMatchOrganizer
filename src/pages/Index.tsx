@@ -109,7 +109,12 @@ const Index: React.FC = () => {
         
         const getMatchDateTime = (match: MatchData) => {
           if (!match.match_date || !match.match_time) return null;
-          return new Date(`${match.match_date}T${match.match_time}`);
+          // Correctly parse the date and time by splitting them.
+          // This is more robust than `new Date(date + 'T' + time)`.
+          const [year, month, day] = match.match_date.split('-').map(Number);
+          const [hours, minutes, seconds] = match.match_time.split(':').map(Number);
+          // Note: month is 0-indexed in JavaScript's Date constructor (0=Jan, 1=Feb, etc.)
+          return new Date(year, month - 1, day, hours, minutes, seconds);
         };
         
         const aDateTime = getMatchDateTime(a);
@@ -216,17 +221,33 @@ const Index: React.FC = () => {
   const now = new Date();
   const getMatchDateTime = (match: MatchData) => {
     if (!match.match_date || !match.match_time) return null;
-    return new Date(`${match.match_date}T${match.match_time}`);
+    // Güçlü ve güvenli tarih/saat birleştirme
+    // match.match_date: 'YYYY-MM-DD', match.match_time: 'HH:MM:SS'
+    // ISO 8601 formatı ile UTC'ye sabitle
+    const isoString = `${match.match_date}T${match.match_time}`;
+    const dateObj = new Date(isoString);
+    if (isNaN(dateObj.getTime())) {
+      // Fallback: elle oluştur
+      const [year, month, day] = match.match_date.split('-').map(Number);
+      const [hours, minutes, seconds] = match.match_time.split(':').map(Number);
+      return new Date(year, month - 1, day, hours, minutes, seconds);
+    }
+    return dateObj;
   };
 
+  // Filtreleme sırasında log ekleyelim
   const upcomingMatches = matches.filter(m => {
     const matchDateTime = getMatchDateTime(m);
-    return matchDateTime ? matchDateTime > now : false;
+    const isUpcoming = matchDateTime ? matchDateTime > now : false;
+    console.log('Match:', m.title, 'DateTime:', matchDateTime, 'isUpcoming:', isUpcoming);
+    return isUpcoming;
   });
 
   const pastMatches = matches.filter(m => {
     const matchDateTime = getMatchDateTime(m);
-    return !matchDateTime || matchDateTime <= now;
+    const isPast = !matchDateTime || matchDateTime <= now;
+    console.log('Match:', m.title, 'DateTime:', matchDateTime, 'isPast:', isPast);
+    return isPast;
   });
 
   const nextMatch = upcomingMatches[0];
