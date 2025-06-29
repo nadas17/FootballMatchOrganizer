@@ -133,6 +133,36 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          id: string
+          username: string
+          avatar_url: string | null
+          position: 'kaleci' | 'defans' | 'orta saha' | 'forvet' | null
+          stars: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          username: string
+          avatar_url?: string | null
+          position?: 'kaleci' | 'defans' | 'orta saha' | 'forvet' | null
+          stars?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          username?: string
+          avatar_url?: string | null
+          position?: 'kaleci' | 'defans' | 'orta saha' | 'forvet' | null
+          stars?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -160,7 +190,7 @@ export type Tables<
   }
     ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
   ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {

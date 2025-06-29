@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Clock, Users, Calendar } from "lucide-react";
@@ -258,8 +259,15 @@ const Index: React.FC = () => {
           </p>
           
           {/* Floating Action Button */}
-          <div className="mt-8">
+          <div className="mt-8 flex gap-4 justify-center">
             <CreateMatchButton />
+            <Link to="/profile">
+              <Button 
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-full text-lg shadow-lg transition-all duration-300 hover:shadow-purple-500/25 hover:scale-105"
+              >
+                Profilim
+              </Button>
+            </Link>
           </div>
 
           {/* Creator Welcome Message */}

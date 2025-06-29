@@ -119,11 +119,20 @@
     inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
 }
 
+.glass-card-dark {
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
 .glass-input {
   background-color: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
+  transition: all 0.3s ease;
 }
 
 .glass-input::placeholder {
@@ -134,89 +143,142 @@
   border-color: rgba(52, 211, 153, 0.5); /* emerald-400/50 */
   outline: none;
   box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.2); /* ring-2 ring-emerald-400/20 */
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Countdown Styles */
-.countdown-number {
-  font-family: 'Orbitron', monospace;
-  font-size: 1.875rem; /* text-3xl */
-  font-weight: bold;
-  background: linear-gradient(to right, #34d399, #60a5fa); /* from-emerald-400 to-blue-400 */
+.glass-input:hover {
+  background-color: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Glass Button Styles */
+.glass-button {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-button:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.glass-button:active {
+  transform: translateY(0);
+}
+
+.glass-button-primary {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.3), rgba(16, 185, 129, 0.2));
+  border-color: rgba(52, 211, 153, 0.5);
+}
+
+.glass-button-primary:hover {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.4), rgba(16, 185, 129, 0.3));
+  border-color: rgba(52, 211, 153, 0.7);
+  box-shadow: 0 10px 25px rgba(52, 211, 153, 0.2);
+}
+
+/* Modern Form Elements */
+.form-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.floating-label {
+  position: absolute;
+  top: 0;
+  left: 0.75rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  padding: 0 0.5rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  transform: translateY(-50%);
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  border-radius: 0.25rem;
+}
+
+/* Success/Error States */
+.glass-input.success {
+  border-color: rgba(34, 197, 94, 0.5);
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.glass-input.error {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Enhanced Card Hover Effects */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, #34d399, #60a5fa, #a78bfa);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem; /* rounded-lg */
-  margin-bottom: 0.5rem; /* mb-2 */
+  background-size: 200% 200%;
+  animation: gradient-x 3s ease infinite;
 }
 
-.countdown-label {
-  font-family: 'Orbitron', monospace;
-  font-size: 0.75rem; /* text-xs */
-  color: rgba(255, 255, 255, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.05em; /* tracking-wider */
-  font-weight: 600; /* font-semibold */
+/* Modern Badge Styles */
+.badge-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
 }
 
-/* Gradient Radial Utility */
-.bg-gradient-radial {
-  background: radial-gradient(circle, var(--tw-gradient-stops));
+/* Divider with Glass Effect */
+.glass-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  margin: 1.5rem 0;
 }
 
-/* Stadium Atmosphere Effects */
+/* Enhanced Stadium Lights */
 .stadium-lights {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* Allow clicks to pass through */
-}
-
-.stadium-lights::before,
-.stadium-lights::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  animation: pulse-slow 3s ease-in-out infinite;
-}
-
-.stadium-lights::before {
-  top: 5%;
-  left: 10%;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(255, 255, 0, 0.1) 0%, transparent 70%);
-}
-
-.stadium-lights::after {
-  top: 15%;
-  right: 25%;
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
-  animation-direction: reverse;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(16, 185, 129, 0.5); /* emerald-500/50 */
-  border-radius: 9999px; /* rounded-full */
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(16, 185, 129, 0.7); /* emerald-500/70 */
+  pointer-events: none;
+  z-index: -1;
 }
 
 /*
@@ -306,5 +368,307 @@
 
   .glass-card {
     padding: 1rem; /* p-4 */
+  }
+}
+
+/*
+  ============================================
+  Modern Utility Classes
+  ============================================
+*/
+
+/* Text Selection */
+::selection {
+  background-color: rgba(52, 211, 153, 0.3);
+  color: #fff;
+}
+
+/* Focus Visible */
+.focus-visible:focus-visible {
+  outline: 2px solid rgba(52, 211, 153, 0.5);
+  outline-offset: 2px;
+}
+
+/* Smooth Transitions */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Modern Shadow System */
+.shadow-glass {
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.shadow-glass-lg {
+  box-shadow: 0 20px 40px 0 rgba(31, 38, 135, 0.37);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 20px rgba(52, 211, 153, 0.3);
+}
+
+/* Backdrop Filters */
+.backdrop-blur-xs {
+  backdrop-filter: blur(2px);
+}
+
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+}
+
+.backdrop-blur-lg {
+  backdrop-filter: blur(24px);
+}
+
+.backdrop-blur-xl {
+  backdrop-filter: blur(40px);
+}
+
+/* Modern Border Styles */
+.border-glass {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.border-glass-strong {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Position Badge for Player Positions */
+.position-badge {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.2), rgba(16, 185, 129, 0.1));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: #34d399;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Star Rating Styles */
+.star-rating {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.star {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.star.filled {
+  color: #fbbf24; /* amber-400 */
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+.star:hover {
+  transform: scale(1.1);
+}
+
+/* Profile Avatar Styles */
+.avatar-glass {
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+}
+
+/* Modern Alert Styles */
+.alert-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.alert-success {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.alert-error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.alert-warning {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+.alert-info {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+/*
+  ============================================
+  Enhanced Responsive Design
+  ============================================
+*/
+@media (max-width: 640px) {
+  .glass-card {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+  
+  .position-badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+  
+  .countdown-number {
+    font-size: 1.25rem;
+  }
+  
+  .star {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .glass-card {
+    margin: 0.25rem;
+    padding: 0.75rem;
+  }
+  
+  .glass-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .glass-card,
+  .glass-input,
+  .glass-button {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    color: black !important;
+    backdrop-filter: none !important;
+  }
+  
+  .stadium-lights {
+    display: none !important;
+  }
+}
+
+/* Stadium Background Enhancements */
+.stadium-background {
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.stadium-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+}
+
+.stadium-overlay-dark {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0.6) 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+}
+
+/* Enhanced glass cards for stadium background */
+.glass-card-stadium {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Stadium lights animation with realistic glow */
+.stadium-lights-realistic {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.stadium-lights-realistic::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 20%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 30%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: stadium-flicker 4s ease-in-out infinite;
+}
+
+.stadium-lights-realistic::after {
+  content: '';
+  position: absolute;
+  top: 5%;
+  right: 15%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.03) 40%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: stadium-flicker 3s ease-in-out infinite reverse;
+}
+
+@keyframes stadium-flicker {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(1.08);
   }
 }
