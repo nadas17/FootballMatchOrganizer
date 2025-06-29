@@ -14,63 +14,67 @@ const ProfilePage = () => {
   const [showLogin, setShowLogin] = useState(true); // true: login, false: register
   const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
 
+  // DEBUG: Profile and user state
+  useEffect(() => {
+    console.log('Profile page - User:', user);
+    console.log('Profile state:', profile);
+    console.log('Loading:', loading, 'Editing:', editing);
+  }, [user, profile, loading, editing]);
+
   console.log('Profile page - User:', user?.email, 'Loading:', loading);
 
+  // Fetch profile when user state changes
   useEffect(() => {
-    fetchProfile();
-    
+    if (user === undefined) return; // İlk renderda supabase auth yüklenmemiş olabilir
+    if (user === null) setLoading(false); // Kullanıcı yoksa loading'i kapat
+    else fetchProfile();
+  }, [user]);
+
+  // İlk açılışta sadece user state'ini çek
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
     // Listen to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth event:', event, 'User:', session?.user?.email);
-      
-      if (event === 'SIGNED_IN') {
-        await fetchProfile();
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
+      setUser(session?.user ?? null);
+      if (event === 'SIGNED_OUT') {
         setProfile(null);
         setEmailNotConfirmed(false);
       }
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
   const fetchProfile = async () => {
     setLoading(true);
-    
     try {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      console.log('Fetched user:', user?.email);
-      
-      setUser(user);
-      
       if (!user) {
         setLoading(false);
         return;
       }
-
       // Show warning if email is not confirmed
       if (!user.email_confirmed_at) {
         setEmailNotConfirmed(true);
         setLoading(false);
         return;
       }
-
       setEmailNotConfirmed(false);
-
       // Fetch profile data
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
-
       if (data) {
         setProfile(data);
         console.log('Profile loaded for:', data.username);
       } else if (!data && !error) {
-        // Profile not found, switch to editing mode
         setEditing(true);
+        setLoading(false);
       }
     } catch (err) {
       console.error('Error in fetchProfile:', err);
@@ -90,8 +94,7 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url(/stadium-bg.jpg)'}}>
-        <div className="absolute inset-0 bg-black/60"></div>
+      <div className="min-h-screen flex items-center justify-center relative profile-stadium-bg">
         <div className="stadium-lights"></div>
         <div className="glass-card p-8 text-center relative z-10">
           <div className="loading-spinner mx-auto mb-4"></div>
@@ -105,8 +108,7 @@ const ProfilePage = () => {
   // Show login/register form if user is not authenticated
   if (!user) {
     return (
-      <div className="min-h-screen bg-cover bg-center bg-no-repeat p-4 relative" style={{backgroundImage: 'url(/stadium-bg.jpg)'}}>
-        <div className="absolute inset-0 bg-black/60"></div>
+      <div className="min-h-screen profile-stadium-bg p-4 relative">
         <div className="stadium-lights"></div>
         <div className="max-w-4xl mx-auto py-8 relative z-10">
           <div className="text-center mb-12">
@@ -163,8 +165,7 @@ const ProfilePage = () => {
   // Show warning if email is not confirmed
   if (user && emailNotConfirmed) {
     return (
-      <div className="min-h-screen bg-cover bg-center bg-no-repeat p-4 relative" style={{backgroundImage: 'url(/stadium-bg.jpg)'}}>
-        <div className="absolute inset-0 bg-black/60"></div>
+      <div className="min-h-screen profile-stadium-bg p-4 relative">
         <div className="stadium-lights"></div>
         <div className="max-w-2xl mx-auto py-16 text-center relative z-10">
           <div className="glass-card p-12">
@@ -209,8 +210,7 @@ const ProfilePage = () => {
 
   // Show profile page if user is authenticated
   return (
-    <div className="min-h-screen bg-cover bg-center bg-no-repeat p-4 relative" style={{backgroundImage: 'url(/stadium-bg.jpg)'}}>
-      <div className="absolute inset-0 bg-black/50"></div>
+    <div className="min-h-screen profile-stadium-bg p-4 relative">
       <div className="stadium-lights"></div>
       <div className="max-w-6xl mx-auto py-8 relative z-10">
         {/* Header */}
