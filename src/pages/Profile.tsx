@@ -70,8 +70,10 @@ const ProfilePage = () => {
         .eq('id', user.id)
         .single();
       if (data) {
-        setProfile(data);
-        console.log('Profile loaded for:', data.username);
+        const safeUsername = data.username?.trim() || "User";
+        const safeAvatarUrl = data.avatar_url || `https://via.placeholder.com/150/2563eb/ffffff?text=${encodeURIComponent(safeUsername[0].toUpperCase())}`;
+        setProfile({ ...data, username: safeUsername, avatar_url: safeAvatarUrl });
+        console.log('Profile loaded for:', safeUsername);
       } else if (!data && !error) {
         setEditing(true);
         setLoading(false);
