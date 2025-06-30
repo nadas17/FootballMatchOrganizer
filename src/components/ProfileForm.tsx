@@ -68,17 +68,17 @@ export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
   if (noUser) return <div>Please sign in.</div>;
 
   return (
-    <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-xl space-y-6 w-full max-w-md mx-auto">
-      <h2 className="text-xl sm:text-2xl font-orbitron font-bold text-white mb-4 text-center drop-shadow">
+    <div className="glass-card p-4 sm:p-6 md:p-8 rounded-xl shadow-lg space-y-4 sm:space-y-6">
+      <h2 className="text-xl sm:text-2xl font-orbitron font-bold text-white mb-2 sm:mb-4 text-center drop-shadow">
         Profile Information
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-5">
         <div>
-          <label className="block text-blue-200 font-semibold mb-2">
+          <label className="block text-blue-200 font-semibold mb-1 sm:mb-2 text-sm sm:text-base">
             Username
           </label>
           <input
-            className="glass-input w-full text-base sm:text-lg px-3 py-2 sm:px-4 sm:py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="glass-input w-full text-base px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
             value={username}
             onChange={e => setUsername(e.target.value)}
             required
@@ -86,30 +86,30 @@ export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
           />
         </div>
         <div>
-          <label className="block text-blue-200 font-semibold mb-2">
+          <label className="block text-blue-200 font-semibold mb-1 sm:mb-2 text-sm sm:text-base">
             Profile Photo URL
           </label>
           <input
-            className="glass-input w-full text-base sm:text-lg px-3 py-2 sm:px-4 sm:py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="glass-input w-full text-base px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
             value={avatarUrl}
             onChange={e => setAvatarUrl(e.target.value)}
             placeholder="Paste image URL (optional)"
           />
         </div>
         <div>
-          <label className="block text-blue-200 font-semibold mb-2">
+          <label className="block text-blue-200 font-semibold mb-1 sm:mb-2 text-sm sm:text-base">
             Position
           </label>
           <select
-            className="glass-input w-full text-base sm:text-lg px-3 py-2 sm:px-4 sm:py-2 rounded-lg focus:ring-2 focus:ring-blue-400 bg-white/10 text-white"
+            className="glass-input w-full text-base px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-400 bg-gray-900/50 text-white"
             value={position}
             onChange={e => setPosition(e.target.value)}
             required
-            style={{ color: '#fff', backgroundColor: 'rgba(30,41,59,0.7)' }}
+            style={{ color: '#fff', backgroundColor: 'rgba(17, 24, 39, 0.6)' }}
           >
             <option value="" className="text-gray-400 bg-gray-900">Select</option>
             {positions.map(pos => (
-              <option key={pos.value} value={pos.value} className="text-black bg-white">
+              <option key={pos.value} value={pos.value} className="text-white bg-gray-800">
                 {pos.label}
               </option>
             ))}
@@ -117,13 +117,13 @@ export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
         </div>
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 text-base sm:text-lg mt-2"
+          className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-2.5 sm:py-3 rounded-lg shadow-md transform transition-transform duration-200 text-base sm:text-lg mt-2"
           disabled={loading}
         >
           {loading ? 'Saving...' : 'Save'}
         </button>
         {error && (
-          <div className="text-red-400 text-center font-semibold mt-2">
+          <div className="text-red-400 text-center font-semibold mt-2 text-sm">
             {error}
           </div>
         )}

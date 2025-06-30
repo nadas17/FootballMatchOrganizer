@@ -1,0 +1,105 @@
+/* Performans ve animasyonla ilgili düzeltmeler */
+/* Hafif, performans odaklı glassmorphism */
+.glass-low-perf {
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Smooth scroll davranışı */
+html {
+  scroll-behavior: smooth;
+}
+
+/* GPU hızlandırma ve frame drop önleme */
+.gpu-accelerate {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Hafif animasyonlar */
+.animate-light {
+  transition-duration: 200ms !important;
+}
+
+/* Responsive text boyutları */
+.text-responsive {
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+}
+
+/* Responsive spacing */
+.spacing-responsive {
+  margin: clamp(0.5rem, 2vw, 1rem);
+  padding: clamp(0.5rem, 2vw, 1rem);
+}
+
+/* Mobil boşluk ve padding optimizasyonları */
+@media (max-width: 640px) {
+  .glass-card {
+    padding: 0.75rem !important;
+    margin: 0.5rem 0 !important;
+    border-radius: 0.75rem !important;
+  }
+  
+  .form-input, 
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  select,
+  textarea {
+    font-size: 16px !important; /* iOS zoom engellemek için */
+    padding: 0.5rem !important;
+  }
+  
+  /* Buton boşluklarını azalt */
+  button, .button {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+  
+  /* Metin aralıklarını azalt */
+  h1, h2, h3, h4 {
+    margin-bottom: 0.75rem !important;
+  }
+  
+  /* Form gruplarını sıkılaştır */
+  .space-y-5, 
+  .space-y-6 {
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  /* Scroll performansı */
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Glassmorphism performans optimizasyonları */
+@media (max-width: 768px) {
+  /* Hafif blur efekti kullan */
+  .glass-card,
+  .glass-input,
+  .glass-button {
+    backdrop-filter: blur(5px) !important;
+  }
+  
+  /* Animasyonları hafiflet */
+  .animate-gradient-x,
+  .animate-pulse-slow,
+  .animate-pulse-ring {
+    animation-play-state: paused;
+  }
+}
+
+/* Heavy animasyonları kapat */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
