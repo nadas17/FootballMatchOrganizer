@@ -280,11 +280,11 @@ const Index: React.FC = () => {
           </p>
           
           {/* Floating Action Button */}
-          <div className="mt-8 flex gap-4 justify-center">
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:gap-4 justify-center items-center w-full max-w-md mx-auto">
             <CreateMatchButton />
-            <Link to="/profile">
+            <Link to="/profile" className="w-full sm:w-auto">
               <Button 
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-full text-lg shadow-lg transition-all duration-300 hover:shadow-purple-500/25 hover:scale-105"
+                className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-full text-lg shadow-lg transition-all duration-300 hover:shadow-purple-500/25 hover:scale-105"
               >
                 Profilim
               </Button>

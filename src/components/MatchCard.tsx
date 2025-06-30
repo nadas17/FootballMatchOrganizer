@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -107,7 +106,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
 
   return (
     <Card className={`glass-card border-none shadow-xl transition-all duration-300 hover:scale-[1.01] sm:hover:scale-[1.02] hover:shadow-2xl ${
-      isNextMatch ? 'ring-2 ring-emerald-400/50 animate-pulse-slow' : ''
+      isNextMatch ? 'ring-2 ring-emerald-400/50' : '' // animate-pulse-slow kaldırıldı
     } ${isArchived ? 'opacity-60' : ''}`}>
       <CardContent className="p-4 sm:p-6">
         {/* Header */}
@@ -116,7 +115,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
             <h3 className="text-lg sm:text-xl font-bold text-white font-orbitron mb-2 leading-tight">
               {match.title || 'Untitled Match'}
               {isNextMatch && (
-                <Badge className="ml-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 animate-pulse text-xs">
+                <Badge className="ml-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
                   NEXT MATCH
                 </Badge>
               )}
@@ -131,21 +130,19 @@ const MatchCard: React.FC<MatchCardProps> = ({
               <p className="text-white/50 text-xs mt-1">Created by: {match.creator_nickname}</p>
             )}
           </div>
-          
           <div className="flex gap-2 items-center">
             {pendingRequestsCount > 0 && isCreator && (
-              <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 animate-pulse flex items-center gap-1 text-xs">
+              <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 flex items-center gap-1 text-xs">
                 <Bell className="w-3 h-3" />
                 {pendingRequestsCount}
               </Badge>
             )}
-            
             {isNextMatch && !isCreator && !isArchived && (
               <div className="relative">
                 <Button
                   onClick={onJoinClick}
                   disabled={isFull}
-                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-emerald-400 to-blue-500 hover:from-emerald-500 hover:to-blue-600 text-white font-bold shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 animate-pulse-ring text-lg sm:text-xl"
+                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-emerald-400 to-blue-500 hover:from-emerald-500 hover:to-blue-600 text-white font-bold shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 text-lg sm:text-xl"
                 >
                   ⚽
                 </Button>

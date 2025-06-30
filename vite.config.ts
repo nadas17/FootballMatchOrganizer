@@ -3,13 +3,16 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
+console.log("Loading Vite configuration...");
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: "localhost",
     port: 8080,
     hmr: { overlay: true },
     fs: { strict: false },
+    open: true,
   },
   plugins: [
     react(),

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Direct Test</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .error {
+            color: #b91c1c;
+            background-color: #fee2e2;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="direct-root"></div>
+    
+    <script type="text/babel">
+        // Simple React component
+        const TestApp = () => {
+            const [count, setCount] = React.useState(0);
+            
+            return (
+                <div className="container">
+                    <h1>React Direct Test</h1>
+                    <p>This page tests if React is working directly with CDN, bypassing your build system.</p>
+                    
+                    <div>
+                        <p>Count: {count}</p>
+                        <button className="btn" onClick={() => setCount(count + 1)}>
+                            Increment
+                        </button>
+                    </div>
+                    
+                    <div style={{marginTop: '20px'}}>
+                        <h2>Diagnostics</h2>
+                        <p>React version: {React.version}</p>
+                        <p>ReactDOM version: {ReactDOM.version}</p>
+                    </div>
+                    
+                    <div style={{marginTop: '20px'}}>
+                        <a href="/">Return to Main App</a>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Render the app
+        try {
+            const root = ReactDOM.createRoot(document.getElementById('direct-root'));
+            root.render(<TestApp />);
+            console.log('React Direct Test loaded successfully');
+        } catch (error) {
+            console.error('Error rendering React Direct Test:', error);
+            document.getElementById('direct-root').innerHTML = `
+                <div class="container">
+                    <h1>Error Loading React</h1>
+                    <div class="error">
+                        ${error.toString()}
+                    </div>
+                    <p>There was a problem loading React from the CDN.</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

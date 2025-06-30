@@ -27,24 +27,37 @@ const queryClient = new QueryClient({
 });
 
 const App: React.FC = () => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-          <MaintenanceBanner />
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
+  // Adding a simple error boundary
+  try {
+    console.log("App component rendering");
+    return (
+      <div>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </div>
+    );
+  } catch (error) {
+    console.error("Error in App component:", error);
+    return (
+      <div style={{ padding: '20px', backgroundColor: '#fee2e2', color: '#b91c1c' }}>
+        <h1>Application Error</h1>
+        <p>There was an error rendering the application. Please check the console for details.</p>
+      </div>
+    );
+  }
 };
 
 export default App;
