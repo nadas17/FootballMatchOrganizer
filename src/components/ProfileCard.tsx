@@ -20,16 +20,22 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     ? encodeURIComponent(username.trim()[0].toUpperCase())
     : "U"; // Default to 'U' if username is empty or invalid
 
-  const defaultAvatar = `https://via.placeholder.com/150/2563eb/ffffff?text=${safeInitial}`;
-
   return (
     <div className={`glass-card p-6 flex flex-col items-center text-center space-y-4 ${className}`}>
       <div className="relative">
-        <img
-          src={avatarUrl || defaultAvatar}
-          alt={`${displayName}'s avatar`}
-          className="w-24 h-24 rounded-full border-2 border-white/20 object-cover shadow-lg bg-white/10"
-        />
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt={`${displayName}'s avatar`}
+            className="w-24 h-24 rounded-full border-2 border-white/20 object-cover shadow-lg bg-white/10"
+          />
+        ) : (
+          <div className="w-24 h-24 rounded-full border-2 border-white/20 bg-gradient-to-br from-blue-600 to-green-500 flex items-center justify-center shadow-lg">
+            <span className="text-white text-4xl font-bold select-none">
+              {displayName[0]?.toUpperCase() || 'U'}
+            </span>
+          </div>
+        )}
       </div>
       
       <div className="space-y-2">
