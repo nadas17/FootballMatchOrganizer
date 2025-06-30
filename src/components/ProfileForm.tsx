@@ -68,8 +68,8 @@ export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
   if (noUser) return <div>Please sign in.</div>;
 
   return (
-    <div className="glass-card max-w-md mx-auto p-8 rounded-2xl shadow-xl space-y-6">
-      <h2 className="text-2xl font-orbitron font-bold text-white mb-4 text-center drop-shadow">
+    <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-xl space-y-6 w-full max-w-md mx-auto">
+      <h2 className="text-xl sm:text-2xl font-orbitron font-bold text-white mb-4 text-center drop-shadow">
         Profile Information
       </h2>
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -78,7 +78,7 @@ export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
             Username
           </label>
           <input
-            className="glass-input w-full text-lg px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="glass-input w-full text-base sm:text-lg px-3 py-2 sm:px-4 sm:py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
             value={username}
             onChange={e => setUsername(e.target.value)}
             required
@@ -90,7 +90,7 @@ export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
             Profile Photo URL
           </label>
           <input
-            className="glass-input w-full text-lg px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="glass-input w-full text-base sm:text-lg px-3 py-2 sm:px-4 sm:py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
             value={avatarUrl}
             onChange={e => setAvatarUrl(e.target.value)}
             placeholder="Paste image URL (optional)"
@@ -101,7 +101,7 @@ export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
             Position
           </label>
           <select
-            className="glass-input w-full text-lg px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400 bg-white/10 text-white"
+            className="glass-input w-full text-base sm:text-lg px-3 py-2 sm:px-4 sm:py-2 rounded-lg focus:ring-2 focus:ring-blue-400 bg-white/10 text-white"
             value={position}
             onChange={e => setPosition(e.target.value)}
             required
@@ -117,7 +117,7 @@ export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
         </div>
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 text-lg"
+          className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 text-base sm:text-lg mt-2"
           disabled={loading}
         >
           {loading ? 'Saving...' : 'Save'}

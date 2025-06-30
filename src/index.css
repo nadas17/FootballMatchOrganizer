@@ -387,15 +387,68 @@
 */
 @media (max-width: 768px) {
   .countdown-number {
-    font-size: 1.5rem; /* text-2xl */
-    padding: 0.5rem; /* p-2 */
+    font-size: 1.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
   }
 
   .glass-card {
-    padding: 1rem; /* p-4 */
+    padding: 1rem;
+    border-radius: 0.75rem;
+  }
+  
+  /* Improve touch targets for mobile */
+  button, 
+  [role="button"],
+  select,
+  input,
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Adjust spacing for mobile */
+  .mobile-px-2 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .mobile-py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  /* Prevent text overflow in small screens */
+  .mobile-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
 }
 
+/* Mobile-first media queries */
+.text-xs-mobile {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.text-sm-mobile {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .text-xs-mobile {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  
+  .text-sm-mobile {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+}
 /*
   ============================================
   Modern Utility Classes

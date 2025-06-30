@@ -93,11 +93,11 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
   if (loading) {
     return (
       <Card className={`glass-card border-none shadow-sm ${className}`}>
-        <CardContent className="p-3 sm:p-4">
-          <div className="animate-pulse space-y-2">
-            <div className="h-4 bg-white/20 rounded w-2/3"></div>
-            <div className="h-6 bg-white/20 rounded w-1/2"></div>
-            <div className="h-3 bg-white/20 rounded w-full"></div>
+        <CardContent className="p-2.5 sm:p-4">
+          <div className="animate-pulse space-y-1.5 sm:space-y-2">
+            <div className="h-3 sm:h-4 bg-white/20 rounded w-2/3"></div>
+            <div className="h-5 sm:h-6 bg-white/20 rounded w-1/2"></div>
+            <div className="h-2.5 sm:h-3 bg-white/20 rounded w-full"></div>
           </div>
         </CardContent>
       </Card>
@@ -107,10 +107,10 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
   if (error || !weather) {
     return (
       <Card className={`glass-card border-none shadow-sm ${className} bg-red-500/20`}>
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex items-center gap-2 text-orange-300">
+        <CardContent className="p-2.5 sm:p-4">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-orange-300">
             <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-            <div className="text-xs sm:text-sm">
+            <div className="text-xs-mobile">
               {error || 'Could not load weather information'}
             </div>
           </div>
@@ -121,31 +121,33 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ lat, lng, location, class
 
   return (
     <Card className={`glass-card border-none shadow-sm ${className}`}>
-      <CardContent className="p-3 sm:p-4">
-        <div className="flex items-center gap-2 mb-2">
+      <CardContent className="p-2.5 sm:p-4">
+        <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
           <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400 flex-shrink-0" />
-          <span className="text-white/80 text-sm font-medium truncate">{weather.location}</span>
+          <span className="text-white/80 text-xs sm:text-sm font-medium truncate mobile-truncate">{weather.location}</span>
         </div>
         
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            {getWeatherIcon(weather.condition)}
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex-shrink-0">
+              {getWeatherIcon(weather.condition)}
+            </div>
             <div>
-              <div className="text-xl sm:text-3xl font-bold text-white">
+              <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">
                 {weather.temperature}°C
               </div>
-              <div className="text-white/70 text-xs sm:text-sm capitalize">{weather.description}</div>
+              <div className="text-white/70 text-xs-mobile capitalize">{weather.description}</div>
             </div>
           </div>
         </div>
         
-        <div className="flex justify-between text-xs sm:text-sm text-white/70">
-          <div className="flex items-center gap-1.5">
-            <Droplets className="w-3 h-3 sm:w-4 sm:h-4 text-blue-300" />
+        <div className="flex justify-between text-xs-mobile text-white/70">
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <Droplets className="w-3 h-3 sm:w-4 sm:h-4 text-blue-300 flex-shrink-0" />
             <span>{weather.humidity}%</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Wind className="w-3 h-3 sm:w-4 sm:h-4 text-green-300" />
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <Wind className="w-3 h-3 sm:w-4 sm:h-4 text-green-300 flex-shrink-0" />
             <span>{weather.windSpeed} km/h</span>
           </div>
         </div>
