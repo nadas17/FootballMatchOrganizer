@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../integrations/supabase/client';
 
-const positions = ['goalkeeper', 'defender', 'midfielder', 'forward'];
+const positions = ['kaleci', 'defans', 'orta saha', 'forvet'];
 
 export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
   const [username, setUsername] = useState('');
@@ -52,7 +52,7 @@ export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
       id: user.id,
       username,
       avatar_url: avatarUrl,
-      position: position as 'goalkeeper' | 'defender' | 'midfielder' | 'forward',
+      position: position as 'kaleci' | 'defans' | 'orta saha' | 'forvet',
     });
     if (error) setError(error.message);
     else console.log('ProfileForm upserted:', { username, avatarUrl, position }); // DEBUG LOG
@@ -63,48 +63,65 @@ export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
   if (noUser) return <div>Please sign in.</div>;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label>Username</label>
-        <input
-          className="glass-input w-full"
-          value={username}
-          onChange={e => setUsername(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Profile Photo URL</label>
-        <input
-          className="glass-input w-full"
-          value={avatarUrl}
-          onChange={e => setAvatarUrl(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Position</label>
-        <select
-          className="glass-input w-full"
-          value={position}
-          onChange={e => setPosition(e.target.value)}
-          required
+    <div className="glass-card max-w-md mx-auto p-8 rounded-2xl shadow-xl space-y-6">
+      <h2 className="text-2xl font-orbitron font-bold text-white mb-4 text-center drop-shadow">
+        Profile Information
+      </h2>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className="block text-blue-200 font-semibold mb-2">
+            Username
+          </label>
+          <input
+            className="glass-input w-full text-lg px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            required
+            placeholder="Enter your username"
+          />
+        </div>
+        <div>
+          <label className="block text-blue-200 font-semibold mb-2">
+            Profile Photo URL
+          </label>
+          <input
+            className="glass-input w-full text-lg px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            value={avatarUrl}
+            onChange={e => setAvatarUrl(e.target.value)}
+            placeholder="Paste image URL (optional)"
+          />
+        </div>
+        <div>
+          <label className="block text-blue-200 font-semibold mb-2">
+            Position
+          </label>
+          <select
+            className="glass-input w-full text-lg px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            value={position}
+            onChange={e => setPosition(e.target.value)}
+            required
+          >
+            <option value="">Select</option>
+            {positions.map(pos => (
+              <option key={pos} value={pos}>
+                {pos.charAt(0).toUpperCase() + pos.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 text-lg"
+          disabled={loading}
         >
-          <option value="">Select</option>
-          {positions.map(pos => (
-            <option key={pos} value={pos}>
-              {pos.charAt(0).toUpperCase() + pos.slice(1)}
-            </option>
-          ))}
-        </select>
-      </div>
-      <button
-        type="submit"
-        className="w-full bg-blue-600 text-white rounded py-2"
-        disabled={loading}
-      >
-        {loading ? 'Saving...' : 'Save'}
-      </button>
-      {error && <div className="text-red-500">{error}</div>}
-    </form>
+          {loading ? 'Saving...' : 'Save'}
+        </button>
+        {error && (
+          <div className="text-red-400 text-center font-semibold mt-2">
+            {error}
+          </div>
+        )}
+      </form>
+    </div>
   );
 }
