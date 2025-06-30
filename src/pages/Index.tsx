@@ -190,7 +190,7 @@ const Index: React.FC = () => {
               <Button
                 className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-full text-lg shadow-lg transition-all duration-300 hover:shadow-purple-500/25 hover:scale-105"
               >
-                Profilim
+                My Profile
               </Button>
             </Link>
           </div>
