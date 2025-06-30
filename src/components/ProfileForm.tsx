@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../integrations/supabase/client';
 
-const positions = ['kaleci', 'defans', 'orta saha', 'forvet'];
+const positions = [
+  { value: 'goalkeeper', label: 'Goalkeeper' },
+  { value: 'defender', label: 'Defender' },
+  { value: 'midfielder', label: 'Midfielder' },
+  { value: 'forward', label: 'Forward' },
+];
 
 export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
   const [username, setUsername] = useState('');
@@ -50,9 +55,9 @@ export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
     }
     const { error } = await supabase.from('profiles').upsert({
       id: user.id,
-      username,
+      username: username,
       avatar_url: avatarUrl,
-      position: position as 'kaleci' | 'defans' | 'orta saha' | 'forvet',
+      position: position as 'goalkeeper' | 'defender' | 'midfielder' | 'forward',
     });
     if (error) setError(error.message);
     else console.log('ProfileForm upserted:', { username, avatarUrl, position }); // DEBUG LOG
@@ -96,15 +101,16 @@ export default function ProfileForm({ onSaved }: { onSaved?: () => void }) {
             Position
           </label>
           <select
-            className="glass-input w-full text-lg px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="glass-input w-full text-lg px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400 bg-white/10 text-white"
             value={position}
             onChange={e => setPosition(e.target.value)}
             required
+            style={{ color: '#fff', backgroundColor: 'rgba(30,41,59,0.7)' }}
           >
-            <option value="">Select</option>
+            <option value="" className="text-gray-400 bg-gray-900">Select</option>
             {positions.map(pos => (
-              <option key={pos} value={pos}>
-                {pos.charAt(0).toUpperCase() + pos.slice(1)}
+              <option key={pos.value} value={pos.value} className="text-black bg-white">
+                {pos.label}
               </option>
             ))}
           </select>
