@@ -40,6 +40,7 @@ const App: React.FC = () => {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          <MaintenanceBanner />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

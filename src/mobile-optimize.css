@@ -11,11 +11,35 @@ html {
   scroll-behavior: smooth;
 }
 
-/* GPU hızlandırma ve frame drop önleme */
+/* GPU acceleration to prevent frame drops */
 .gpu-accelerate {
   transform: translateZ(0);
   will-change: transform;
   backface-visibility: hidden;
+}
+
+/* Fast tap response for mobile devices */
+@media (max-width: 768px) {
+  a, button, [role="button"], input[type="submit"], input[type="button"] {
+    touch-action: manipulation;
+  }
+  
+  /* Optimize mobile forms */
+  input, select, textarea {
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  
+  /* Disable pull-to-refresh but keep normal scrolling */
+  body {
+    overscroll-behavior-y: contain;
+  }
+  
+  /* Better readability on mobile */
+  p, li, input, select, textarea {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
 }
 
 /* Hafif animasyonlar */
@@ -34,7 +58,7 @@ html {
   padding: clamp(0.5rem, 2vw, 1rem);
 }
 
-/* Mobil boşluk ve padding optimizasyonları */
+/* Mobile spacing and padding optimizations */
 @media (max-width: 640px) {
   .glass-card {
     padding: 0.75rem !important;
@@ -49,31 +73,55 @@ html {
   input[type="url"],
   select,
   textarea {
-    font-size: 16px !important; /* iOS zoom engellemek için */
+    font-size: 16px !important; /* Prevent iOS zoom */
     padding: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+    /* Improve tap target size */
+    min-height: 44px !important;
   }
   
-  /* Buton boşluklarını azalt */
+  /* Button improvements */
   button, .button {
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
+    padding-top: 0.625rem !important;
+    padding-bottom: 0.625rem !important;
+    /* Improve tap target size */
+    min-height: 44px !important;
+    /* Add subtle touch feedback */
+    transition: transform 0.1s ease-in-out !important;
   }
   
-  /* Metin aralıklarını azalt */
+  button:active, .button:active {
+    transform: scale(0.98) !important;
+  }
+  
+  /* Reduce text margins */
   h1, h2, h3, h4 {
     margin-bottom: 0.75rem !important;
+    /* Better mobile typography */
+    letter-spacing: -0.01em !important;
   }
   
-  /* Form gruplarını sıkılaştır */
+  /* Tighten form groups */
   .space-y-5, 
   .space-y-6 {
-    margin-top: 0.75rem !important;
-    margin-bottom: 0.75rem !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
   }
   
-  /* Scroll performansı */
+  /* Improve scroll performance */
   body {
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+  }
+  
+  /* Fixed bottom actions always visible */
+  .fixed-bottom-actions {
+    position: sticky !important;
+    bottom: 0 !important;
+    background-color: rgba(15, 23, 42, 0.8) !important;
+    backdrop-filter: blur(8px) !important;
+    padding: 0.75rem !important;
+    z-index: 50 !important;
   }
 }
 
@@ -93,6 +141,8 @@ html {
     animation-play-state: paused;
   }
 }
+
+
 
 /* Heavy animasyonları kapat */
 @media (prefers-reduced-motion: reduce) {
