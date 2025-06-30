@@ -74,6 +74,9 @@ const ProfilePage = () => {
         const safeAvatarUrl = data.avatar_url || `https://via.placeholder.com/150/2563eb/ffffff?text=${encodeURIComponent(safeUsername[0].toUpperCase())}`;
         setProfile({ ...data, username: safeUsername, avatar_url: safeAvatarUrl });
         console.log('Profile loaded for:', safeUsername);
+        console.log('Fetched profile data:', data);
+        console.log('Safe username:', safeUsername);
+        console.log('Safe avatar URL:', safeAvatarUrl);
       } else if (!data && !error) {
         setEditing(true);
         setLoading(false);
