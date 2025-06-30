@@ -16,7 +16,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   className = "" 
 }) => {
   const displayName = username && username.length > 0 ? username : "User";
-  const safeInitial = displayName[0] ? encodeURIComponent(displayName[0].toUpperCase()) : "U";
+  const safeInitial = username && username.trim().length > 0
+    ? encodeURIComponent(username.trim()[0].toUpperCase())
+    : "U"; // Default to 'U' if username is empty or invalid
+
   const defaultAvatar = `https://via.placeholder.com/150/2563eb/ffffff?text=${safeInitial}`;
 
   return (
