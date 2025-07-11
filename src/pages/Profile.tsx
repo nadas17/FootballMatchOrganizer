@@ -98,8 +98,8 @@ const ProfilePage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center relative profile-stadium-bg">
+  return (
+      <div className="min-h-screen flex items-center justify-center relative profile-stadium-bg pb-24">
         <div className="stadium-lights"></div>
         <div className="glass-card p-8 text-center relative z-10">
           <div className="loading-spinner mx-auto mb-4"></div>
@@ -113,7 +113,7 @@ const ProfilePage = () => {
   // Show login/register form if user is not authenticated
   if (!user) {
     return (
-      <div className="min-h-screen profile-stadium-bg p-2 sm:p-4 relative">
+      <div className="min-h-screen profile-stadium-bg p-2 sm:p-4 pb-24 relative">
         <div className="stadium-lights"></div>
         <div className="max-w-4xl mx-auto py-3 sm:py-8 relative z-10">
           <div className="text-center mb-12">
@@ -170,7 +170,7 @@ const ProfilePage = () => {
   // Show warning if email is not confirmed
   if (user && emailNotConfirmed) {
     return (
-      <div className="min-h-screen profile-stadium-bg p-4 relative">
+      <div className="min-h-screen profile-stadium-bg p-4 pb-24 relative">
         <div className="stadium-lights"></div>
         <div className="max-w-2xl mx-auto py-16 text-center relative z-10">
           <div className="glass-card p-12">
@@ -215,7 +215,7 @@ const ProfilePage = () => {
 
   // Show profile page if user is authenticated
   return (
-    <div className="min-h-screen profile-stadium-bg p-2 sm:p-4 relative">
+    <div className="min-h-screen profile-stadium-bg p-2 sm:p-4 pb-24 relative">
       <div className="stadium-lights"></div>
       <div className="max-w-6xl mx-auto py-3 sm:py-8 relative z-10">
         {/* Header */}

@@ -177,7 +177,7 @@ const Index: React.FC = () => {
       }}>
         <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
       </div>
-      <div className="relative z-10 container mx-auto px-2 sm:px-4 py-6 sm:py-8">
+      <div className="relative z-10 container mx-auto px-2 sm:px-4 py-6 sm:py-8 pb-24">
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent animate-gradient-x mb-4 font-orbitron">PITCH MASTERS</h1>
           <h2 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-orange-400 via-red-400 to-pink-400 bg-clip-text text-transparent animate-gradient-x delay-300 font-orbitron">Elite Football Club</h2>

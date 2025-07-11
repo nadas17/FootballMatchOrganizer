@@ -4,10 +4,12 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import FluidGlassNav from "./components/FluidGlassNav";
 
 // Lazy load pages for better performance
 const Index = lazy(() => import("./pages/Index"));
 const Profile = lazy(() => import("./pages/Profile"));
+const Matches = lazy(() => import("./pages/Matches"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading fallback
@@ -31,7 +33,7 @@ const App: React.FC = () => {
   try {
     console.log("App component rendering");
     return (
-      <div>
+      <div className="relative">
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
             <Toaster />
@@ -41,9 +43,11 @@ const App: React.FC = () => {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/matches" element={<Matches />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
+              <FluidGlassNav />
             </BrowserRouter>
           </TooltipProvider>
         </QueryClientProvider>
