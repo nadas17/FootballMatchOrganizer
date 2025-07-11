@@ -394,7 +394,7 @@
   }
 
   .glass-card {
-    padding: 1rem;
+    padding: 0.75rem;
     border-radius: 0.75rem;
   }
   
@@ -425,6 +425,38 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+  }
+  
+  /* Mobile typography adjustments */
+  .font-orbitron {
+    font-size: 0.9em;
+    line-height: 1.3;
+  }
+  
+  /* Better spacing for mobile forms */
+  .space-y-4 > * + * {
+    margin-top: 0.75rem;
+  }
+  
+  .space-y-6 > * + * {
+    margin-top: 1rem;
+  }
+  
+  /* Mobile-optimized button padding */
+  .glass-button,
+  .glass-button-primary {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Responsive grid adjustments */
+  .grid {
+    gap: 0.75rem;
+  }
+  
+  /* Compact mobile cards */
+  .card-hover {
+    padding: 0.75rem;
   }
 }
 

@@ -4,6 +4,7 @@ import ProfileCard from '../components/ProfileCard';
 import ProfileForm from '../components/ProfileForm';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
+import RequestsPanel from '../components/RequestsPanel';
 import type { Profile } from '../types/profile';
 
 const ProfilePage = () => {
@@ -248,12 +249,12 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-4 sm:gap-8">
+        <div className="grid xl:grid-cols-3 gap-4 sm:gap-6">
           {/* Profile Display Section */}
-          <div className="space-y-4 sm:space-y-6">
+          <div className="xl:col-span-1 space-y-4 sm:space-y-6">
             {profile && !editing ? (
               <>
-                <div className="glass-card p-4 sm:p-8 rounded-xl card-hover">
+                <div className="glass-card p-4 sm:p-6 rounded-xl card-hover">
                   <ProfileCard
                     username={profile.username}
                     avatarUrl={profile.avatar_url}
@@ -263,16 +264,16 @@ const ProfilePage = () => {
                 </div>
                 <button 
                   onClick={() => setEditing(true)}
-                  className="w-full glass-button-primary py-3 sm:py-4 rounded-xl font-semibold transition-smooth text-sm sm:text-base"
+                  className="w-full glass-button-primary py-2.5 sm:py-3 text-sm sm:text-base rounded-xl font-semibold transition-smooth"
                 >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                   Edit Profile
                 </button>
               </>
             ) : (
-              <div className="glass-card p-6 sm:p-12 text-center rounded-xl">
+              <div className="glass-card p-4 sm:p-8 text-center rounded-xl">
                 <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-glow">
                   <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -293,14 +294,14 @@ const ProfilePage = () => {
 
           {/* Profile Form Section */}
           {(editing || !profile) && (
-            <div className="glass-card p-4 sm:p-8 rounded-xl">
-              <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-8">
+            <div className="xl:col-span-1 glass-card p-4 sm:p-6 rounded-xl">
+              <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
                   <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-orbitron font-bold text-white">
+                <h2 className="text-lg sm:text-xl font-orbitron font-bold text-white">
                   Profile Information
                 </h2>
               </div>
@@ -316,6 +317,13 @@ const ProfilePage = () => {
                   Cancel
                 </button>
               )}
+            </div>
+          )}
+
+          {/* Match Requests Section - Only visible when profile is complete */}
+          {profile && !editing && (
+            <div className="xl:col-span-1">
+              <RequestsPanel creatorId={user.id} />
             </div>
           )}
         </div>

@@ -207,13 +207,14 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
 
   return (
     <Card className="glass-card border-none shadow-2xl">
-      <CardHeader>
+      <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-orbitron text-white flex items-center gap-2">
-            <Users className="w-5 h-5 text-emerald-400" />
-            Join Requests
+          <CardTitle className="text-lg sm:text-xl font-orbitron text-white flex items-center gap-2">
+            <Users className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+            <span className="hidden sm:inline">Join Requests</span>
+            <span className="sm:hidden">Requests</span>
             {requests.length > 0 && (
-              <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 animate-pulse">
+              <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 animate-pulse text-xs">
                 {requests.length}
               </Badge>
             )}
@@ -223,61 +224,63 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
             size="sm"
             onClick={handleRefresh}
             disabled={refreshing}
-            className="text-white/70 hover:text-white hover:bg-white/10"
+            className="text-white/70 hover:text-white hover:bg-white/10 p-2"
           >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${refreshing ? 'animate-spin' : ''}`} />
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 pt-0">
         {requests.length === 0 ? (
-          <div className="text-white/70 text-center py-8">
-            <Users className="w-12 h-12 text-white/30 mx-auto mb-4" />
-            <p className="font-semibold">No pending requests</p>
-            <p className="text-xs mt-2 text-white/50">New join requests will appear here</p>
+          <div className="text-white/70 text-center py-6 sm:py-8">
+            <Users className="w-8 h-8 sm:w-12 sm:h-12 text-white/30 mx-auto mb-3 sm:mb-4" />
+            <p className="font-semibold text-sm sm:text-base">No pending requests</p>
+            <p className="text-xs mt-1 sm:mt-2 text-white/50">New join requests will appear here</p>
           </div>
         ) : (
           requests.map((request) => (
-            <div key={request.id} className="p-4 rounded-lg bg-gradient-to-r from-emerald-500/10 to-blue-500/10 backdrop-blur-sm border border-emerald-500/20 hover:border-emerald-500/30 transition-all duration-300">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h4 className="font-semibold text-white flex items-center gap-2">
+            <div key={request.id} className="p-3 sm:p-4 rounded-lg bg-gradient-to-r from-emerald-500/10 to-blue-500/10 backdrop-blur-sm border border-emerald-500/20 hover:border-emerald-500/30 transition-all duration-300">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+                <div className="flex-1">
+                  <h4 className="font-semibold text-white flex items-center gap-2 text-sm sm:text-base">
                     <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                    {request.participant_name}
+                    <span className="truncate">{request.participant_name}</span>
                   </h4>
-                  <p className="text-white/70 text-sm">{request.match_title}</p>
-                  <div className="flex items-center gap-2 mt-1">
+                  <p className="text-white/70 text-xs sm:text-sm truncate">{request.match_title}</p>
+                  <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1">
                     {getPositionBadge(request.position)}
                     {getTeamBadge(request.team)}
-                    <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
+                    <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 flex items-center gap-1 text-xs">
+                      <Clock className="w-2 h-2 sm:w-3 sm:h-3" />
                       Pending
                     </Badge>
                   </div>
                 </div>
               </div>
               
-              <div className="text-white/60 text-xs mb-4">
-                Requested {new Date(request.created_at).toLocaleDateString('en-GB')} at {new Date(request.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+              <div className="text-white/60 text-xs mb-3 sm:mb-4">
+                {new Date(request.created_at).toLocaleDateString('en-GB')} at {new Date(request.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
               </div>
               
               <div className="flex gap-2">
                 <Button
                   onClick={() => handleRequest(request.id, 'approved', request.match_id, request.participant_name, request.position, request.team)}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-xs sm:text-sm py-2"
                   size="sm"
                 >
-                  <CheckCircle className="w-4 h-4 mr-1" />
-                  Approve
+                  <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                  <span className="hidden sm:inline">Approve</span>
+                  <span className="sm:hidden">✓</span>
                 </Button>
                 <Button
                   onClick={() => handleRequest(request.id, 'rejected', request.match_id, request.participant_name, request.position, request.team)}
                   variant="outline"
-                  className="flex-1 border-red-500/50 text-red-400 hover:bg-red-500/10"
+                  className="flex-1 border-red-500/50 text-red-400 hover:bg-red-500/10 text-xs sm:text-sm py-2"
                   size="sm"
                 >
-                  <XCircle className="w-4 h-4 mr-1" />
-                  Reject
+                  <XCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                  <span className="hidden sm:inline">Reject</span>
+                  <span className="sm:hidden">✗</span>
                 </Button>
               </div>
             </div>

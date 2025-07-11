@@ -28,6 +28,9 @@ const MatchesPage = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const { toast } = useToast();
 
+  // User state for authentication
+  const [user, setUser] = useState<any>(null);
+
   // Form state for creating new match
   const [newMatch, setNewMatch] = useState({
     title: '',
@@ -39,6 +42,21 @@ const MatchesPage = () => {
     price_per_player: 0,
     creator_nickname: ''
   });
+
+  // Check authentication
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+    
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Fetch matches from Supabase
   const fetchMatches = async () => {
@@ -99,6 +117,7 @@ const MatchesPage = () => {
           max_players: newMatch.max_players,
           price_per_player: newMatch.price_per_player,
           creator_nickname: newMatch.creator_nickname || 'Anonymous',
+          creator_id: user?.id || null,
           current_players: 0
         }])
         .select();
@@ -195,11 +214,22 @@ const MatchesPage = () => {
             </div>
             
             <button
-              onClick={() => setShowCreateForm(!showCreateForm)}
-              className="glass-button-primary px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold transition-smooth flex items-center gap-2"
+              onClick={() => {
+                if (!user) {
+                  toast({
+                    title: "Authentication Required",
+                    description: "Please log in to create a match.",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                setShowCreateForm(!showCreateForm);
+              }}
+              className="glass-button-primary px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold transition-smooth flex items-center gap-2 text-sm sm:text-base"
             >
               <Plus className="w-4 h-4" />
-              Create Match
+              <span className="hidden sm:inline">Create Match</span>
+              <span className="sm:hidden">Create</span>
             </button>
           </div>
         </div>
