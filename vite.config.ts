@@ -31,7 +31,6 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'dist',
     sourcemap: mode === 'development',
-    minify: 'terser',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -39,12 +38,6 @@ export default defineConfig(({ mode }) => ({
           supabase: ['@supabase/supabase-js'],
           ui: ['@radix-ui/react-dialog', '@radix-ui/react-select'],
         },
-      },
-    },
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production',
-        drop_debugger: mode === 'production',
       },
     },
   },
