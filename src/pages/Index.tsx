@@ -11,7 +11,6 @@ import RequestsPanel from "@/components/RequestsPanel";
 import WeatherWidget from "@/components/WeatherWidget";
 import { supabase } from "@/integrations/supabase/client";
 import { MatchData } from "@/types/match";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { getCreatorInfo } from "@/utils/localStorage";
 
 const Index: React.FC = () => {
@@ -155,11 +154,6 @@ const Index: React.FC = () => {
     return matchDateTime ? matchDateTime > now : false;
   });
 
-  const pastMatches = matches.filter(m => {
-    const matchDateTime = getMatchDateTime(m);
-    return !matchDateTime || matchDateTime <= now;
-  });
-
   const nextMatch = upcomingMatches[0];
 
   if (loading) {
@@ -238,30 +232,6 @@ const Index: React.FC = () => {
                 onCancel={() => setSelectedMatch(null)}
                 onSuccess={handleJoinSuccess}
               />
-            )}
-            {pastMatches.length > 0 && (
-              <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
-                <Card className="glass-card border-none shadow-2xl">
-                  <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="item-1" className="border-none">
-                      <AccordionTrigger className="p-6 hover:no-underline w-full flex justify-between items-center">
-                        <h3 className="text-2xl font-orbitron text-white">Match Archive</h3>
-                      </AccordionTrigger>
-                      <AccordionContent className="px-6 pb-6 space-y-4">
-                        {pastMatches.map(match => (
-                          <MatchCard
-                            key={match.id}
-                            match={match}
-                            onJoinClick={() => {}}
-                            isArchived={true}
-                            isCreator={match.creator_id === creatorId}
-                          />
-                        ))}
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </Card>
-              </div>
             )}
           </div>
           <div className="space-y-6">

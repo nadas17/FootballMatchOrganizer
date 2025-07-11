@@ -1,27 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../integrations/supabase/client';
-import { Calendar, Clock, MapPin, Users, Plus, Trophy, Search, Filter } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Plus, Trophy, Search, Filter, Archive } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
-
-interface Match {
-  id: string;
-  title: string;
-  description: string;
-  match_date: string;
-  match_time: string;
-  location: string;
-  location_lat: number;
-  location_lng: number;
-  max_players: number;
-  current_players: number;
-  price_per_player: number;
-  creator_id: string;
-  creator_nickname: string;
-  created_at: string;
-}
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import MatchCard from '../components/MatchCard';
+import { MatchData } from '@/types/match';
 
 const MatchesPage = () => {
-  const [matches, setMatches] = useState<Match[]>([]);
+  const [matches, setMatches] = useState<MatchData[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,7 +64,18 @@ const MatchesPage = () => {
         return;
       }
 
-      setMatches(data || []);
+      // Fetch participants data
+      const { data: participantsData } = await supabase
+        .from('match_participants')
+        .select('*');
+
+      // Combine matches with participants using MatchData format
+      const matchesWithParticipants: MatchData[] = data?.map(match => ({
+        ...match,
+        participants: participantsData?.filter(p => p.match_id === match.id) || []
+      })) || [];
+
+      setMatches(matchesWithParticipants);
     } catch (error) {
       console.error('Error fetching matches:', error);
       toast({
@@ -165,12 +162,38 @@ const MatchesPage = () => {
     }
   };
 
-  // Filter matches based on search
-  const filteredMatches = matches.filter(match => 
+  // Get current date and time
+  const now = new Date();
+  
+  const getMatchDateTime = (match: MatchData) => {
+    if (!match.match_date || !match.match_time) return null;
+    const isoString = `${match.match_date}T${match.match_time}`;
+    const dateObj = new Date(isoString);
+    if (isNaN(dateObj.getTime())) {
+      const [year, month, day] = match.match_date.split('-').map(Number);
+      const [hours, minutes, seconds] = match.match_time.split(':').map(Number);
+      return new Date(year, month - 1, day, hours, minutes, seconds);
+    }
+    return dateObj;
+  };
+
+  // Filter matches based on search and date
+  const allFilteredMatches = matches.filter(match => 
     match.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     match.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
     match.creator_nickname.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Separate upcoming and past matches
+  const upcomingMatches = allFilteredMatches.filter(match => {
+    const matchDateTime = getMatchDateTime(match);
+    return matchDateTime ? matchDateTime > now : false;
+  });
+
+  const pastMatches = allFilteredMatches.filter(match => {
+    const matchDateTime = getMatchDateTime(match);
+    return !matchDateTime || matchDateTime <= now;
+  });
 
   // Format date and time
   const formatDate = (dateStr: string) => {
@@ -393,7 +416,7 @@ const MatchesPage = () => {
             <div className="glass-card p-6 rounded-xl">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-orbitron font-bold text-white">
-                  Available Matches ({filteredMatches.length})
+                  Available Matches ({upcomingMatches.length})
                 </h2>
                 <button 
                   onClick={fetchMatches}
@@ -408,11 +431,11 @@ const MatchesPage = () => {
                   <div className="loading-spinner mx-auto mb-4"></div>
                   <p className="text-blue-200">Loading matches...</p>
                 </div>
-              ) : filteredMatches.length === 0 ? (
+              ) : upcomingMatches.length === 0 ? (
                 <div className="text-center py-8">
                   <Trophy className="w-12 h-12 text-blue-300 mx-auto mb-4" />
                   <p className="text-blue-200 mb-2">
-                    {searchTerm ? 'No matches found for your search.' : 'No matches available yet.'}
+                    {searchTerm ? 'No upcoming matches found for your search.' : 'No upcoming matches available yet.'}
                   </p>
                   <p className="text-blue-300 text-sm">
                     {!showCreateForm && 'Be the first to create a match!'}
@@ -420,70 +443,41 @@ const MatchesPage = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {filteredMatches.map((match) => (
-                    <div 
-                      key={match.id} 
-                      className="bg-white/5 rounded-lg p-4 border border-white/10 hover:border-white/20 transition-all group"
-                    >
-                      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-3">
-                            <div>
-                              <h3 className="text-white font-semibold text-lg mb-1">{match.title}</h3>
-                              <p className="text-blue-200 text-sm">Created by {match.creator_nickname}</p>
-                            </div>
-                            <span className={`px-2 py-1 rounded text-xs font-medium ${
-                              match.current_players >= match.max_players 
-                                ? 'bg-red-500/20 text-red-300' 
-                                : 'bg-green-500/20 text-green-300'
-                            }`}>
-                              {match.current_players >= match.max_players ? 'Full' : 'Open'}
-                            </span>
-                          </div>
-                          
-                          {match.description && (
-                            <p className="text-blue-200 text-sm mb-3">{match.description}</p>
-                          )}
-
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-                            <div className="flex items-center gap-2 text-blue-200">
-                              <MapPin className="w-4 h-4" />
-                              <span className="truncate">{match.location}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-blue-200">
-                              <Calendar className="w-4 h-4" />
-                              <span>{formatDate(match.match_date)}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-blue-200">
-                              <Clock className="w-4 h-4" />
-                              <span>{formatTime(match.match_time)}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-blue-200">
-                              <Users className="w-4 h-4" />
-                              <span>{match.current_players}/{match.max_players}</span>
-                            </div>
-                          </div>
-
-                          {match.price_per_player > 0 && (
-                            <div className="mt-3">
-                              <span className="bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded text-xs">
-                                ${match.price_per_player} per player
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex gap-2">
-                          <button 
-                            className="glass-button-primary px-4 py-2 rounded-lg font-semibold transition-smooth text-sm disabled:opacity-50"
-                            disabled={match.current_players >= match.max_players}
-                          >
-                            {match.current_players >= match.max_players ? 'Match Full' : 'Join Match'}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                  {upcomingMatches.map((match) => (
+                    <MatchCard
+                      key={match.id}
+                      match={match}
+                      onJoinClick={() => {}}
+                      isCreator={match.creator_id === user?.id}
+                    />
                   ))}
+                </div>
+              )}
+
+              {/* Match Archive Section */}
+              {pastMatches.length > 0 && (
+                <div className="mt-8">
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="archive" className="border-none">
+                      <AccordionTrigger className="p-4 hover:no-underline w-full flex justify-between items-center bg-white/5 rounded-lg border border-white/10">
+                        <div className="flex items-center gap-2">
+                          <Archive className="w-5 h-5 text-blue-300" />
+                          <h3 className="text-lg font-orbitron text-white">Match Archive ({pastMatches.length})</h3>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-0 pb-0 mt-4 space-y-4">
+                        {pastMatches.map(match => (
+                          <MatchCard
+                            key={match.id}
+                            match={match}
+                            onJoinClick={() => {}}
+                            isArchived={true}
+                            isCreator={match.creator_id === user?.id}
+                          />
+                        ))}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </div>
               )}
             </div>
