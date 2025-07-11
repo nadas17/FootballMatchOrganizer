@@ -107,7 +107,7 @@ const MatchesPage = () => {
         .from('matches')
         .insert([{
           title: newMatch.title,
-          description: newMatch.description,
+          description: newMatch.description || null,
           location: newMatch.location,
           match_date: newMatch.match_date,
           match_time: newMatch.match_time,
@@ -179,9 +179,9 @@ const MatchesPage = () => {
 
   // Filter matches based on search and date
   const allFilteredMatches = matches.filter(match => 
-    match.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    match.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    match.creator_nickname.toLowerCase().includes(searchTerm.toLowerCase())
+    (match.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (match.location || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (match.creator_nickname || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Separate upcoming and past matches
@@ -196,7 +196,7 @@ const MatchesPage = () => {
   });
 
   // Format date and time
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string | null) => {
     if (!dateStr) return 'TBD';
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { 
@@ -206,7 +206,7 @@ const MatchesPage = () => {
     });
   };
 
-  const formatTime = (timeStr: string) => {
+  const formatTime = (timeStr: string | null) => {
     if (!timeStr) return 'TBD';
     return timeStr.slice(0, 5); // HH:MM format
   };
