@@ -65,9 +65,17 @@ const Index: React.FC = () => {
 
       if (participantsError) throw participantsError;
 
+      // Fetch profiles data separately
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('username, stars');
+
       const matchesWithParticipants: MatchData[] = matchesData?.map(match => ({
         ...match,
-        participants: participantsData?.filter(p => p.match_id === match.id) || []
+        participants: participantsData?.filter(p => p.match_id === match.id).map(participant => ({
+          ...participant,
+          profiles: profilesData?.find(profile => profile.username === participant.participant_name) || null
+        })) || []
       })) || [];
 
       const sortedMatches = matchesWithParticipants.sort((a, b) => {

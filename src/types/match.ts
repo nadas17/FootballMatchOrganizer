@@ -21,6 +21,10 @@ export interface MatchData {
     position: string | null;
     match_id: string;
     created_at: string;
+    profiles?: {
+      username: string;
+      stars: number | null;
+    } | null;
   }>;
 }
 

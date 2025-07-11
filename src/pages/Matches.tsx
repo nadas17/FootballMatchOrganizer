@@ -69,10 +69,18 @@ const MatchesPage = () => {
         .from('match_participants')
         .select('*');
 
-      // Combine matches with participants using MatchData format
+      // Fetch profiles data separately
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('username, stars');
+
+      // Combine matches with participants and profiles using MatchData format
       const matchesWithParticipants: MatchData[] = data?.map(match => ({
         ...match,
-        participants: participantsData?.filter(p => p.match_id === match.id) || []
+        participants: participantsData?.filter(p => p.match_id === match.id).map(participant => ({
+          ...participant,
+          profiles: profilesData?.find(profile => profile.username === participant.participant_name) || null
+        })) || []
       })) || [];
 
       setMatches(matchesWithParticipants);

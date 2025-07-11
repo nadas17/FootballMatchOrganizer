@@ -87,14 +87,20 @@ const MatchCard: React.FC<MatchCardProps> = ({
                   {position.charAt(0).toUpperCase() + position.slice(1)} ({players.length})
                 </h4>
                 <div className="grid gap-2">
-                  {players.map((player) => (
-                    <div 
-                      key={player.id} 
-                      className={`text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border ${getPositionColor(position)}`}
-                    >
-                      {player.participant_name}
-                    </div>
-                  ))}
+                             {players.map((player) => (
+                               <div 
+                                 key={player.id} 
+                                 className={`text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border ${getPositionColor(position)} flex items-center justify-between`}
+                               >
+                                 <span>{player.participant_name}</span>
+                                 {player.profiles?.stars && (
+                                   <div className="flex items-center gap-1 text-yellow-400">
+                                     <span className="text-xs">⭐</span>
+                                     <span className="text-xs font-medium">{player.profiles.stars}</span>
+                                   </div>
+                                 )}
+                               </div>
+                             ))}
                 </div>
               </div>
             );
@@ -288,14 +294,20 @@ const MatchCard: React.FC<MatchCardProps> = ({
                             {position.charAt(0).toUpperCase() + position.slice(1)} ({players.length})
                           </h4>
                           <div className="grid gap-2">
-                            {players.map((player) => (
-                              <div 
-                                key={player.id} 
-                                className={`text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border ${getPositionColor(position)}`}
-                              >
-                                {player.participant_name}
-                              </div>
-                            ))}
+                             {players.map((player) => (
+                               <div 
+                                 key={player.id} 
+                                 className={`text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border ${getPositionColor(position)} flex items-center justify-between`}
+                               >
+                                 <span>{player.participant_name}</span>
+                                 {player.profiles?.stars && (
+                                   <div className="flex items-center gap-1 text-yellow-400">
+                                     <span className="text-xs">⭐</span>
+                                     <span className="text-xs font-medium">{player.profiles.stars}</span>
+                                   </div>
+                                 )}
+                               </div>
+                             ))}
                           </div>
                         </div>
                       );
