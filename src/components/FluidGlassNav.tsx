@@ -5,8 +5,8 @@ export default function FluidGlassNav() {
   const location = useLocation();
 
   const navItems = [
-    { label: "Anasayfa", link: "/" },
-    { label: "Profil", link: "/profile" },
+    { label: "Home", link: "/" },
+    { label: "Profile", link: "/profile" },
     { label: "Matches", link: "/matches" },
   ];
 
