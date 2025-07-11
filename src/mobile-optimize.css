@@ -1,9 +1,18 @@
-/* Performans ve animasyonla ilgili düzeltmeler */
+/* Mobil performans optimizasyonları */
+/* GPU acceleration zorunlu tüm elementler için */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+}
+
 /* Hafif, performans odaklı glassmorphism */
 .glass-low-perf {
   background-color: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(3px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 /* Smooth scroll davranışı */
@@ -18,27 +27,54 @@ html {
   backface-visibility: hidden;
 }
 
-/* Fast tap response for mobile devices */
+/* Kritik performans optimizasyonları */
+* {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Fast tap response ve 60fps performans */
 @media (max-width: 768px) {
-  a, button, [role="button"], input[type="submit"], input[type="button"] {
-    touch-action: manipulation;
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
   
-  /* Optimize mobile forms */
+  a, button, [role="button"], input[type="submit"], input[type="button"] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transform: translateZ(0);
+  }
+  
+  /* GPU accelerated inputs */
   input, select, textarea {
     appearance: none;
     -webkit-appearance: none;
+    transform: translateZ(0);
+    will-change: transform;
   }
   
-  /* Disable pull-to-refresh but keep normal scrolling */
+  /* Optimize scrolling performansı */
   body {
     overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
   }
   
-  /* Better readability on mobile */
-  p, li, input, select, textarea {
+  /* iOS Safari zoom önleme ve performans */
+  input, select, textarea {
     font-size: 16px !important;
-    line-height: 1.5 !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Blur efektlerini kapat mobilde */
+  .glass-card,
+  .glass-input,
+  .glass-button {
+    backdrop-filter: none !important;
+    background-color: rgba(0, 0, 0, 0.4) !important;
   }
 }
 
@@ -125,26 +161,56 @@ html {
   }
 }
 
-/* Glassmorphism performans optimizasyonları */
+/* Glassmorphism tamamen kapat mobilde */
 @media (max-width: 768px) {
-  /* Hafif blur efekti kullan */
+  /* Tüm blur efektlerini kapat */
   .glass-card,
   .glass-input,
-  .glass-button {
-    backdrop-filter: blur(5px) !important;
+  .glass-button,
+  .glass-card-dark {
+    backdrop-filter: none !important;
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
   }
   
-  /* Animasyonları hafiflet */
+  /* Performans için animasyonları tamamen kapat */
   .animate-gradient-x,
   .animate-pulse-slow,
-  .animate-pulse-ring {
-    animation-play-state: paused;
+  .animate-pulse-ring,
+  .gradient-text {
+    animation: none !important;
+  }
+  
+  /* Transform efektlerini basitleştir */
+  .card-hover:hover {
+    transform: none !important;
+    box-shadow: none !important;
   }
 }
 
 
 
-/* Heavy animasyonları kapat */
+/* Performans kritik alanlar */
+@media (max-width: 768px) {
+  /* Ağır animasyonları tamamen kapat */
+  * {
+    animation-duration: 0.1s !important;
+    transition-duration: 0.1s !important;
+  }
+  
+  /* Background attachment kapat */
+  .stadium-bg,
+  .profile-stadium-bg {
+    background-attachment: scroll !important;
+  }
+  
+  /* Gradient efektlerini basitleştir */
+  .stadium-lights {
+    display: none !important;
+  }
+}
+
+/* Reduced motion için */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
