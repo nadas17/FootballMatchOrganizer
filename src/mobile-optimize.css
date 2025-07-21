@@ -193,9 +193,16 @@ html {
 /* Performans kritik alanlar */
 @media (max-width: 768px) {
   /* Ağır animasyonları tamamen kapat */
+  .animate-gradient-x,
+  .animate-pulse-slow,
+  .animate-pulse-ring {
+    animation: none !important;
+  }
+  
+  /* Animasyon sürelerini kısalt */
   * {
-    animation-duration: 0.1s !important;
-    transition-duration: 0.1s !important;
+    animation-duration: 0.2s !important;
+    transition-duration: 0.2s !important;
   }
   
   /* Background attachment kapat */
@@ -207,6 +214,28 @@ html {
   /* Gradient efektlerini basitleştir */
   .stadium-lights {
     display: none !important;
+  }
+  
+  /* Transform3d kullan GPU acceleration için */
+  .glass-card,
+  .card-hover,
+  button,
+  .button {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+  
+  /* Minimum touch target boyutu */
+  button, .button, a, input, select {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  
+  /* Text rendering optimize et */
+  * {
+    text-rendering: optimizeSpeed !important;
+    -webkit-font-smoothing: antialiased !important;
   }
 }
 
