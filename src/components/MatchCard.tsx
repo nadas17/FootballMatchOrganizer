@@ -230,7 +230,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
             className="text-white hover:bg-white/10 p-2 rounded-lg transition-all duration-300 justify-start sm:justify-center"
           >
             <Users className="w-4 h-4 mr-2 text-purple-400 flex-shrink-0" />
-            <span className="font-semibold">
+            <span className="font-semibold text-white">
               Players: {actualPlayerCount}/{match.max_players || 0}
             </span>
             {showParticipants ? (
