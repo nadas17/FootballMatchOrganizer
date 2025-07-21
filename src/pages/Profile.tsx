@@ -31,20 +31,57 @@ const ProfilePage = () => {
     else fetchProfile();
   }, [user]);
 
+  // Auth cleanup utility
+  const cleanupAuthState = () => {
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        localStorage.removeItem(key);
+      }
+    });
+    Object.keys(sessionStorage || {}).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        sessionStorage.removeItem(key);
+      }
+    });
+  };
+
   // İlk açılışta sadece user state'ini çek
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error && error.message.includes('refresh_token_not_found')) {
+          console.log('Refresh token not found, cleaning up auth state');
+          cleanupAuthState();
+          await supabase.auth.signOut({ scope: 'global' });
+          setUser(null);
+          return;
+        }
+        setUser(user);
+      } catch (error) {
+        console.error('Error getting user:', error);
+        cleanupAuthState();
+        setUser(null);
+      }
     };
     getUser();
+    
     // Listen to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth event:', event, 'User:', session?.user?.email);
+      
+      if (event === 'TOKEN_REFRESHED' && !session) {
+        console.log('Token refresh failed, cleaning up');
+        cleanupAuthState();
+        setUser(null);
+        return;
+      }
+      
       setUser(session?.user ?? null);
       if (event === 'SIGNED_OUT') {
         setProfile(null);
         setEmailNotConfirmed(false);
+        cleanupAuthState();
       }
     });
     return () => subscription.unsubscribe();
@@ -95,7 +132,15 @@ const ProfilePage = () => {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    try {
+      cleanupAuthState();
+      await supabase.auth.signOut({ scope: 'global' });
+      window.location.href = '/profile';
+    } catch (error) {
+      console.error('Logout error:', error);
+      cleanupAuthState();
+      window.location.href = '/profile';
+    }
   };
 
   if (loading) {
