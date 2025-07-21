@@ -1,4 +1,5 @@
 import React from "react";
+import footballAvatar from "@/assets/football-avatar.png";
 
 interface ProfileCardProps {
   username?: string;
@@ -9,7 +10,6 @@ interface ProfileCardProps {
 
 const ProfileCard: React.FC<ProfileCardProps> = ({
   username = "User",
-  avatarUrl = "https://via.placeholder.com/150/2563eb/ffffff?text=U",
   position = "Player",
   stars = 0,
 }) => {
@@ -18,13 +18,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       <div className="relative mb-4">
         <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-4 border-blue-400/50 shadow-lg">
           <img
-            src={avatarUrl}
-            alt={`${username} avatar`}
+            src={footballAvatar}
+            alt="Football Avatar"
             className="w-full h-full object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = `https://via.placeholder.com/150/2563eb/ffffff?text=${encodeURIComponent(username[0].toUpperCase())}`;
-            }}
           />
         </div>
         <div className="absolute -bottom-2 -right-2 bg-green-500 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center">
