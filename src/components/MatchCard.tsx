@@ -223,11 +223,11 @@ const MatchCard: React.FC<MatchCardProps> = ({
         )}
 
         {/* Players Counter and Join Button */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <div className="flex flex-col gap-3 mb-4">
           <Button
             variant="ghost"
             onClick={() => setShowParticipants(!showParticipants)}
-            className="text-white hover:bg-white/10 p-2 rounded-lg transition-all duration-300 justify-start sm:justify-center"
+            className="text-white hover:bg-white/10 p-2 rounded-lg transition-all duration-300 justify-start"
           >
             <Users className="w-4 h-4 mr-2 text-purple-400 flex-shrink-0" />
             <span className="font-semibold text-white">
@@ -249,7 +249,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
             <Button
               onClick={onJoinClick}
               disabled={isFull}
-              className={`px-4 sm:px-6 py-2 rounded-lg font-semibold transition-all duration-300 w-full sm:w-auto ${
+              className={`px-4 py-3 rounded-lg font-semibold transition-all duration-300 w-full text-base ${
                 isFull
                   ? 'bg-red-500/20 text-red-400 border border-red-500/30 cursor-not-allowed'
                   : 'bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white shadow-lg hover:shadow-emerald-500/25 hover:scale-105'
@@ -261,7 +261,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
           
           {/* Archived Badge */}
           {isArchived && (
-            <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30 w-full sm:w-auto justify-center">
+            <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30 w-full justify-center">
               ARCHIVED
             </Badge>
           )}
