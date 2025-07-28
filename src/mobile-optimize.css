@@ -46,6 +46,22 @@ html {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     transform: translateZ(0);
+    min-height: 44px; /* Apple's minimum touch target size */
+    min-width: 44px;
+  }
+  
+  /* Enhanced mobile button optimization for join buttons */
+  button[aria-label*="join"], button[aria-label*="Join"] {
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    line-height: 1.2;
+    border-radius: 8px !important;
+    transition: transform 0.1s ease-out !important;
+  }
+  
+  button[aria-label*="join"]:active, button[aria-label*="Join"]:active {
+    transform: scale(0.95) !important;
   }
   
   /* GPU accelerated inputs */

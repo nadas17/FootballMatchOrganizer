@@ -112,70 +112,81 @@ const MatchCard: React.FC<MatchCardProps> = ({
 
   return (
     <Card className={`glass-card border-none shadow-xl transition-all duration-300 hover:scale-[1.01] sm:hover:scale-[1.02] hover:shadow-2xl ${
-      isNextMatch ? 'ring-2 ring-emerald-400/50' : '' // animate-pulse-slow kaldırıldı
+      isNextMatch ? 'ring-2 ring-emerald-400/50' : ''
     } ${isArchived ? 'opacity-60' : ''}`}>
-      <CardContent className="p-4 sm:p-6">
+      <CardContent className="p-3 sm:p-4 lg:p-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
-          <div className="flex-1">
-            <h3 className="text-lg sm:text-xl font-bold text-white font-orbitron mb-2 leading-tight">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4 mb-4">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base sm:text-lg lg:text-xl font-bold text-white font-orbitron mb-2 leading-tight break-words">
               {match.title || 'Untitled Match'}
               {isNextMatch && (
-                <Badge className="ml-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
+                <Badge className="ml-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs whitespace-nowrap">
                   NEXT MATCH
                 </Badge>
               )}
               {isCreator && (
-                <Badge className="ml-2 bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
+                <Badge className="ml-2 bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs whitespace-nowrap">
                   YOUR MATCH
                 </Badge>
               )}
             </h3>
-            <p className="text-white/70 text-sm leading-relaxed">{match.description || 'No description'}</p>
+            <p className="text-white/70 text-sm leading-relaxed break-words">{match.description || 'No description'}</p>
             {match.creator_nickname && (
-              <p className="text-white/50 text-xs mt-1">Created by: {match.creator_nickname}</p>
+              <p className="text-white/50 text-xs mt-1 break-words">Created by: {match.creator_nickname}</p>
             )}
           </div>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center flex-wrap">
             {pendingRequestsCount > 0 && isCreator && (
               <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 flex items-center gap-1 text-xs">
                 <Bell className="w-3 h-3" />
                 {pendingRequestsCount}
               </Badge>
             )}
+            {/* Quick Join Button for Next Match - Mobile Optimized */}
             {isNextMatch && !isCreator && !isArchived && (
               <div className="relative">
                 <Button
-                  onClick={onJoinClick}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Quick join button clicked for next match:', match.id);
+                    onJoinClick();
+                  }}
                   disabled={isFull}
-                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-emerald-400 to-blue-500 hover:from-emerald-500 hover:to-blue-600 text-white font-bold shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 text-lg sm:text-xl"
+                  className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full font-bold shadow-lg transition-all duration-300 text-lg sm:text-xl min-w-[48px] min-h-[48px] ${
+                    isFull 
+                      ? 'bg-red-500/20 text-red-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-emerald-400 to-blue-500 hover:from-emerald-500 hover:to-blue-600 text-white hover:shadow-emerald-500/25 active:scale-95'
+                  }`}
+                  aria-label={isFull ? 'Match is full' : 'Quick join for next match'}
                 >
-                  ⚽
+                  {isFull ? '🚫' : '⚽'}
                 </Button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Match Info Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
-          <div className="flex items-center gap-2 text-white/80">
+        {/* Match Info Grid - Mobile Optimized */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-4">
+          <div className="flex items-center gap-2 text-white/80 min-w-0">
             <Calendar className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-            <span className="text-sm truncate">
+            <span className="text-xs sm:text-sm truncate">
               {match.match_date ? new Date(match.match_date).toLocaleDateString() : 'TBD'}
             </span>
           </div>
           
-          <div className="flex items-center gap-2 text-white/80">
+          <div className="flex items-center gap-2 text-white/80 min-w-0">
             <Clock className="w-4 h-4 text-blue-400 flex-shrink-0" />
-            <span className="text-sm truncate">{match.match_time || 'TBD'}</span>
+            <span className="text-xs sm:text-sm truncate">{match.match_time || 'TBD'}</span>
           </div>
           
-          <div className="flex items-center gap-2 text-white/80">
+          <div className="flex items-center gap-2 text-white/80 min-w-0 col-span-2 sm:col-span-1">
             <MapPin className="w-4 h-4 text-orange-400 flex-shrink-0" />
             {hasLocation ? (
               <div className="flex items-center gap-1 flex-1 min-w-0">
-                <span className="text-sm truncate flex-1">{match.location || 'Location'}</span>
+                <span className="text-xs sm:text-sm truncate flex-1">{match.location || 'Location'}</span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -186,13 +197,13 @@ const MatchCard: React.FC<MatchCardProps> = ({
                 </Button>
               </div>
             ) : (
-              <span className="text-sm truncate">{match.location || 'TBD'}</span>
+              <span className="text-xs sm:text-sm truncate">{match.location || 'TBD'}</span>
             )}
           </div>
           
-          <div className="flex items-center gap-2 text-white/80">
+          <div className="flex items-center gap-2 text-white/80 min-w-0 col-span-2 sm:col-span-1">
             <div className="text-yellow-400 font-bold text-sm flex-shrink-0">zł</div>
-            <span className="text-sm truncate">
+            <span className="text-xs sm:text-sm truncate">
               {match.price_per_player !== null ? match.price_per_player : 'Free'}
             </span>
           </div>
@@ -222,7 +233,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
           </div>
         )}
 
-        {/* Players Counter and Join Button */}
+        {/* Players Counter and Mobile Join Button Section */}
         <div className="flex flex-col gap-3 mb-4">
           <Button
             variant="ghost"
@@ -244,25 +255,38 @@ const MatchCard: React.FC<MatchCardProps> = ({
             )}
           </Button>
           
-          {/* Join Button - Show for all non-archived matches where user is not the creator */}
+          {/* Mobile/Desktop Join Button - Show for all non-archived matches where user is not the creator */}
           {!isArchived && !isCreator && (
             <Button
-              onClick={onJoinClick}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Join button clicked for match:', match.id);
+                onJoinClick();
+              }}
               disabled={isFull}
-              className={`px-4 py-3 rounded-lg font-semibold transition-all duration-300 w-full text-base ${
+              className={`px-4 py-3 rounded-lg font-semibold transition-all duration-300 w-full text-base min-h-[48px] ${
                 isFull
                   ? 'bg-red-500/20 text-red-400 border border-red-500/30 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white shadow-lg hover:shadow-emerald-500/25 hover:scale-105'
+                  : 'bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white shadow-lg hover:shadow-emerald-500/25 hover:scale-105 active:scale-95'
               }`}
+              aria-label={isFull ? 'Match is full' : 'Request to join this match'}
             >
-              {isFull ? 'Match Full' : 'Request to Join'}
+              {isFull ? '🚫 Match Full' : '⚽ Request to Join'}
             </Button>
+          )}
+          
+          {/* Creator Badge for Own Matches */}
+          {!isArchived && isCreator && (
+            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 w-full justify-center py-2 text-sm">
+              ⭐ YOUR MATCH - View Requests Panel
+            </Badge>
           )}
           
           {/* Archived Badge */}
           {isArchived && (
-            <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30 w-full justify-center">
-              ARCHIVED
+            <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30 w-full justify-center py-2 text-sm">
+              📋 ARCHIVED MATCH
             </Badge>
           )}
         </div>

@@ -18,7 +18,6 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log('RequestsPanel mounted with creatorId:', creatorId);
     fetchRequests();
     
     // Set up real-time subscription
@@ -32,7 +31,6 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
           table: 'match_requests'
         },
         (payload) => {
-          console.log('Real-time update received:', payload);
           fetchRequests();
         }
       )
@@ -45,8 +43,6 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
 
   const fetchRequests = async () => {
     try {
-      console.log('Fetching requests for creator:', creatorId);
-      
       const { data, error } = await supabase
         .from('match_requests')
         .select(`
@@ -63,9 +59,6 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
-      console.log('Raw requests data:', data);
-      console.log('Requests fetch error:', error);
-
       if (error) throw error;
 
       const requestsWithMatchTitle = data?.map(request => ({
@@ -79,10 +72,8 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
         match_title: request.matches?.title || 'Untitled Match'
       })) || [];
 
-      console.log('Processed requests:', requestsWithMatchTitle);
       setRequests(requestsWithMatchTitle);
     } catch (error) {
-      console.error('Error fetching requests:', error);
       toast({
         title: "Error",
         description: "Failed to load requests",
@@ -139,26 +130,17 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
 
   const handleRequest = async (requestId: string, action: 'approved' | 'rejected', matchId: string, participantName: string, position: string | null, team: string | null) => {
     try {
-      console.log('=== HANDLING REQUEST START ===');
-      console.log('Request details:', { requestId, action, matchId, participantName, position, team });
-      
       // Update request status first
-      console.log('Updating request status...');
       const { error: updateError } = await supabase
         .from('match_requests')
         .update({ status: action })
         .eq('id', requestId);
 
       if (updateError) {
-        console.error('Error updating request status:', updateError);
         throw new Error(`Failed to update request status: ${updateError.message}`);
       }
 
-      console.log('Request status updated successfully');
-
       if (action === 'approved') {
-        console.log('Adding participant to match...');
-        
         // Check if participant already exists
         const { data: existingParticipant } = await supabase
           .from('match_participants')
@@ -176,53 +158,30 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
             team: team
           };
           
-          console.log('Inserting participant:', participantData);
-          
           const { error: insertError } = await supabase
             .from('match_participants')
             .insert(participantData);
 
           if (insertError) {
-            console.error('Error inserting participant:', insertError);
             throw new Error(`Failed to add participant: ${insertError.message}`);
           }
 
-          console.log('Participant added successfully');
-
           // Get current participant count and update current_players
-          console.log('Updating participant count...');
           const { data: participants, error: countError } = await supabase
             .from('match_participants')
             .select('id')
             .eq('match_id', matchId);
 
-          if (countError) {
-            console.error('Error getting participant count:', countError);
-            // Don't throw here, just log the error as this is not critical
-            console.warn('Could not update participant count, but participant was added successfully');
-          } else {
-            const actualCount = participants?.length || 0;
-            console.log('Current participant count:', actualCount);
+          if (!countError && participants) {
+            const actualCount = participants.length;
 
-            const { error: updateCountError } = await supabase
+            await supabase
               .from('matches')
               .update({ current_players: actualCount })
               .eq('id', matchId);
-
-            if (updateCountError) {
-              console.error('Error updating match count:', updateCountError);
-              // Don't throw here either, as the main operation succeeded
-              console.warn('Could not update match count, but participant was added successfully');
-            } else {
-              console.log('Match participant count updated successfully');
-            }
           }
-        } else {
-          console.log('Participant already exists in match, skipping insertion');
         }
       }
-
-      console.log('=== HANDLING REQUEST SUCCESS ===');
 
       toast({
         title: action === 'approved' ? "Request Approved! ⚽" : "Request Rejected",
@@ -232,9 +191,6 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
       // Refresh requests
       fetchRequests();
     } catch (error: any) {
-      console.error('=== HANDLING REQUEST ERROR ===');
-      console.error('Error details:', error);
-      
       toast({
         title: "Error",
         description: error?.message || "Failed to process request",

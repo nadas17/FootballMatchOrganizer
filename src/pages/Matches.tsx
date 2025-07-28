@@ -4,6 +4,7 @@ import { Calendar, Clock, MapPin, Users, Plus, Trophy, Search, Filter, Archive }
 import { useToast } from '../hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import MatchCard from '../components/MatchCard';
+import JoinMatchForm from '../components/JoinMatchForm';
 import { MatchData } from '@/types/match';
 
 const MatchesPage = () => {
@@ -12,6 +13,7 @@ const MatchesPage = () => {
   const [creating, setCreating] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [selectedMatchForJoin, setSelectedMatchForJoin] = useState<string | null>(null);
   const { toast } = useToast();
 
   // User state for authentication
@@ -94,6 +96,33 @@ const MatchesPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle join match functionality
+  const handleJoinMatch = (matchId: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to join matches.",
+        variant: "destructive",
+      });
+      return;
+    }
+    console.log('Opening join form for match:', matchId);
+    setSelectedMatchForJoin(matchId);
+  };
+
+  const handleJoinSuccess = () => {
+    setSelectedMatchForJoin(null);
+    fetchMatches(); // Refresh matches to show updated participant count
+    toast({
+      title: "Success! ⚽",
+      description: "Your join request has been sent successfully!",
+    });
+  };
+
+  const handleJoinCancel = () => {
+    setSelectedMatchForJoin(null);
   };
 
   // Create new match
@@ -455,7 +484,7 @@ const MatchesPage = () => {
                     <MatchCard
                       key={match.id}
                       match={match}
-                      onJoinClick={() => {}}
+                      onJoinClick={() => handleJoinMatch(match.id)}
                       isCreator={match.creator_id === user?.id}
                     />
                   ))}
@@ -478,7 +507,7 @@ const MatchesPage = () => {
                           <MatchCard
                             key={match.id}
                             match={match}
-                            onJoinClick={() => {}}
+                            onJoinClick={() => handleJoinMatch(match.id)}
                             isArchived={true}
                             isCreator={match.creator_id === user?.id}
                           />
@@ -492,6 +521,15 @@ const MatchesPage = () => {
           </div>
         </div>
       </div>
+      
+      {/* Join Match Form Modal */}
+      {selectedMatchForJoin && (
+        <JoinMatchForm
+          matchId={selectedMatchForJoin}
+          onCancel={handleJoinCancel}
+          onSuccess={handleJoinSuccess}
+        />
+      )}
     </div>
   );
 };
