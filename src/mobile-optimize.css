@@ -76,7 +76,6 @@ html {
   body {
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
-    overflow-scrolling: touch;
   }
   
   /* iOS Safari zoom önleme ve performans */
