@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,10 +27,15 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('=== JOIN REQUEST FORM SUBMISSION START ===');
+    console.log('Form data:', { matchId, playerName, team, position });
+    
     // Enhanced validation
     const sanitizedName = sanitizeString(playerName);
+    console.log('Sanitized name:', sanitizedName);
     
     if (!validatePlayerName(sanitizedName)) {
+      console.error('Validation failed: Invalid player name');
       toast({
         title: "Invalid Name",
         description: "Name must be 2-50 characters and contain only letters, numbers, spaces, hyphens, and underscores",
@@ -39,6 +45,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
     }
 
     if (!position || !team) {
+      console.error('Validation failed: Missing team or position');
       toast({
         title: "Missing Information",
         description: "Please select a team and choose a position",
@@ -51,14 +58,10 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
     setError(null);
     
     try {
-      console.log('=== JOIN REQUEST START ===');
-      console.log('Match ID:', matchId);
-      console.log('Player Name:', sanitizedName);
-      console.log('Team:', team);
-      console.log('Position:', position);
+      console.log('=== STARTING DATABASE OPERATIONS ===');
       
       // Check if user already has a pending request for this match
-      console.log('Checking for existing requests...');
+      console.log('Step 1: Checking for existing requests...');
       const { data: existingRequest, error: checkError } = await supabase
         .from('match_requests')
         .select('id')
@@ -67,15 +70,15 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
         .eq('status', 'pending')
         .maybeSingle();
 
-      console.log('Existing request check result:', { existingRequest, checkError });
+      console.log('Existing request check:', { existingRequest, checkError });
 
       if (checkError) {
-        console.error('Error checking existing requests:', checkError);
+        console.error('Database error during existing request check:', checkError);
         throw new Error(`Database error: ${checkError.message}`);
       }
 
       if (existingRequest) {
-        console.log('Found existing request, showing message');
+        console.log('Found existing request, aborting');
         toast({
           title: "Request Already Sent",
           description: "You already have a pending request for this match.",
@@ -86,7 +89,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
       }
 
       // Create new request with team selection
-      console.log('Creating new join request...');
+      console.log('Step 2: Creating new join request...');
       const requestData = {
         match_id: matchId,
         participant_name: sanitizedName,
@@ -94,7 +97,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
         team: team,
         status: 'pending' as const
       };
-      console.log('Request data:', requestData);
+      console.log('Request data to insert:', requestData);
 
       const { data: newRequest, error: insertError } = await supabase
         .from('match_requests')
@@ -102,10 +105,15 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
         .select()
         .single();
 
-      console.log('Insert result:', { newRequest, insertError });
+      console.log('Insert operation result:', { newRequest, insertError });
 
       if (insertError) {
-        console.error('Insert error details:', insertError);
+        console.error('Insert error details:', {
+          code: insertError.code,
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint
+        });
         
         // Handle specific error cases
         if (insertError.code === '23503') {
@@ -115,6 +123,11 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
         } else {
           throw new Error(`Failed to send request: ${insertError.message}`);
         }
+      }
+
+      if (!newRequest) {
+        console.error('No data returned from insert operation');
+        throw new Error('Failed to create request - no data returned');
       }
 
       console.log('Request successfully created:', newRequest);
@@ -128,7 +141,9 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
       onSuccess();
     } catch (error: any) {
       console.error('=== JOIN REQUEST ERROR ===');
-      console.error('Error details:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error message:', error?.message);
+      console.error('Full error object:', error);
       
       const errorMessage = error?.message || 'Unknown error occurred';
       setError(errorMessage);
@@ -140,6 +155,7 @@ const JoinMatchForm: React.FC<JoinMatchFormProps> = ({ matchId, onCancel, onSucc
       });
     } finally {
       setLoading(false);
+      console.log('=== JOIN REQUEST FORM SUBMISSION END ===');
     }
   };
 

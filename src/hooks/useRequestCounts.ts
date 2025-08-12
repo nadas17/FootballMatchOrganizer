@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 
@@ -6,7 +7,14 @@ export const useRequestCounts = (creatorId: string | null) => {
   const [totalRequestCount, setTotalRequestCount] = useState(0);
 
   const fetchRequestCounts = useCallback(async () => {
-    if (!creatorId) return;
+    if (!creatorId) {
+      console.log('useRequestCounts: No creator ID provided');
+      return;
+    }
+    
+    console.log('=== FETCHING REQUEST COUNTS ===');
+    console.log('Creator ID:', creatorId);
+    
     try {
       const { data, error } = await supabase
         .from('match_requests')
@@ -17,7 +25,12 @@ export const useRequestCounts = (creatorId: string | null) => {
         .eq('matches.creator_id', creatorId)
         .eq('status', 'pending');
       
-      if (error) throw error;
+      console.log('Request counts query result:', { data, error });
+      
+      if (error) {
+        console.error('Error fetching request counts:', error);
+        throw error;
+      }
       
       const counts: Record<string, number> = {};
       let total = 0;
@@ -26,14 +39,20 @@ export const useRequestCounts = (creatorId: string | null) => {
         total++;
       });
       
+      console.log('Processed counts:', { counts, total });
+      
       setRequestCounts(counts);
       setTotalRequestCount(total);
-    } catch {}
+    } catch (error) {
+      console.error('useRequestCounts error:', error);
+    }
   }, [creatorId]);
 
   useEffect(() => {
     if (creatorId) {
+      console.log('useRequestCounts: Setting up for creator:', creatorId);
       fetchRequestCounts();
+      
       const channel = supabase
         .channel('requests_count_changes')
         .on(
@@ -43,13 +62,17 @@ export const useRequestCounts = (creatorId: string | null) => {
             schema: 'public',
             table: 'match_requests'
           },
-          () => {
+          (payload) => {
+            console.log('Real-time update received:', payload);
             fetchRequestCounts();
           }
         )
-        .subscribe();
+        .subscribe((status) => {
+          console.log('Subscription status:', status);
+        });
 
       return () => {
+        console.log('Cleaning up subscription');
         supabase.removeChannel(channel);
       };
     }

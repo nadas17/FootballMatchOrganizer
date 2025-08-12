@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,10 +32,13 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
           table: 'match_requests'
         },
         (payload) => {
+          console.log('RequestsPanel: Real-time update received:', payload);
           fetchRequests();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('RequestsPanel: Subscription status:', status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
@@ -42,6 +46,9 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
   }, [creatorId]);
 
   const fetchRequests = async () => {
+    console.log('=== FETCHING REQUESTS ===');
+    console.log('Creator ID:', creatorId);
+    
     try {
       const { data, error } = await supabase
         .from('match_requests')
@@ -59,7 +66,12 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      console.log('Requests query result:', { data, error });
+
+      if (error) {
+        console.error('Error fetching requests:', error);
+        throw error;
+      }
 
       const requestsWithMatchTitle = data?.map(request => ({
         id: request.id,
@@ -72,8 +84,10 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
         match_title: request.matches?.title || 'Untitled Match'
       })) || [];
 
+      console.log('Processed requests:', requestsWithMatchTitle);
       setRequests(requestsWithMatchTitle);
     } catch (error) {
+      console.error('RequestsPanel fetchRequests error:', error);
       toast({
         title: "Error",
         description: "Failed to load requests",
@@ -129,25 +143,36 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
   };
 
   const handleRequest = async (requestId: string, action: 'approved' | 'rejected', matchId: string, participantName: string, position: string | null, team: string | null) => {
+    console.log('=== HANDLING REQUEST ===');
+    console.log('Request details:', { requestId, action, matchId, participantName, position, team });
+    
     try {
       // Update request status first
+      console.log('Step 1: Updating request status...');
       const { error: updateError } = await supabase
         .from('match_requests')
         .update({ status: action })
         .eq('id', requestId);
 
+      console.log('Request status update result:', { updateError });
+
       if (updateError) {
+        console.error('Failed to update request status:', updateError);
         throw new Error(`Failed to update request status: ${updateError.message}`);
       }
 
       if (action === 'approved') {
+        console.log('Step 2: Adding participant to match...');
+        
         // Check if participant already exists
-        const { data: existingParticipant } = await supabase
+        const { data: existingParticipant, error: checkError } = await supabase
           .from('match_participants')
           .select('id')
           .eq('match_id', matchId)
           .eq('participant_name', participantName)
           .single();
+
+        console.log('Existing participant check:', { existingParticipant, checkError });
 
         if (!existingParticipant) {
           // Add participant to match with selected team and position
@@ -158,30 +183,45 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
             team: team
           };
           
+          console.log('Adding participant with data:', participantData);
+          
           const { error: insertError } = await supabase
             .from('match_participants')
             .insert(participantData);
 
+          console.log('Participant insert result:', { insertError });
+
           if (insertError) {
+            console.error('Failed to add participant:', insertError);
             throw new Error(`Failed to add participant: ${insertError.message}`);
           }
 
           // Get current participant count and update current_players
+          console.log('Step 3: Updating participant count...');
           const { data: participants, error: countError } = await supabase
             .from('match_participants')
             .select('id')
             .eq('match_id', matchId);
 
+          console.log('Participant count query:', { participants, countError });
+
           if (!countError && participants) {
             const actualCount = participants.length;
+            console.log('Updating match with participant count:', actualCount);
 
-            await supabase
+            const { error: matchUpdateError } = await supabase
               .from('matches')
               .update({ current_players: actualCount })
               .eq('id', matchId);
+
+            console.log('Match update result:', { matchUpdateError });
           }
+        } else {
+          console.log('Participant already exists, skipping insert');
         }
       }
+
+      console.log('=== REQUEST HANDLED SUCCESSFULLY ===');
 
       toast({
         title: action === 'approved' ? "Request Approved! ⚽" : "Request Rejected",
@@ -191,6 +231,9 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
       // Refresh requests
       fetchRequests();
     } catch (error: any) {
+      console.error('=== REQUEST HANDLING ERROR ===');
+      console.error('Error details:', error);
+      
       toast({
         title: "Error",
         description: error?.message || "Failed to process request",
