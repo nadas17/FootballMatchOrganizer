@@ -7,6 +7,7 @@ import { CheckCircle, XCircle, Clock, Users, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { MatchRequest } from "@/types/match";
+import { getCreatorInfo } from "@/utils/localStorage";
 
 interface RequestsPanelProps {
   creatorId: string;
@@ -50,21 +51,51 @@ const RequestsPanel: React.FC<RequestsPanelProps> = ({ creatorId }) => {
     console.log('Creator ID:', creatorId);
     
     try {
-      const { data, error } = await supabase
-        .from('match_requests')
-        .select(`
-          id,
-          match_id,
-          participant_name,
-          status,
-          position,
-          team,
-          created_at,
-          matches!inner(title, creator_id)
-        `)
-        .eq('matches.creator_id', creatorId)
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false });
+      // Try filtering by creator_id first; if no results, fallback to creator_nickname
+      const { creatorNickname } = getCreatorInfo();
+      let data: any[] | null = null;
+      let error: any = null;
+
+      if (creatorId) {
+        const res = await supabase
+          .from('match_requests')
+          .select(`
+            id,
+            match_id,
+            participant_name,
+            status,
+            position,
+            team,
+            created_at,
+            matches!inner(title, creator_id, creator_nickname)
+          `)
+          .eq('matches.creator_id', creatorId)
+          .eq('status', 'pending')
+          .order('created_at', { ascending: false });
+        data = res.data as any[] | null;
+        error = res.error;
+      }
+
+      if (!error && (!data || data.length === 0) && creatorNickname) {
+        console.log('No requests found by creator_id, falling back to creator_nickname:', creatorNickname);
+        const resByNick = await supabase
+          .from('match_requests')
+          .select(`
+            id,
+            match_id,
+            participant_name,
+            status,
+            position,
+            team,
+            created_at,
+            matches!inner(title, creator_id, creator_nickname)
+          `)
+          .eq('matches.creator_nickname', creatorNickname)
+          .eq('status', 'pending')
+          .order('created_at', { ascending: false });
+        data = resByNick.data as any[] | null;
+        error = resByNick.error;
+      }
 
       console.log('Requests query result:', { data, error });
 

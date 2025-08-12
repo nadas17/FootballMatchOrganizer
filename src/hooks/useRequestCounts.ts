@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from "@/integrations/supabase/client";
+import { getCreatorInfo } from "@/utils/localStorage";
 
 export const useRequestCounts = (creatorId: string | null) => {
   const [requestCounts, setRequestCounts] = useState<Record<string, number>>({});
@@ -16,14 +17,37 @@ export const useRequestCounts = (creatorId: string | null) => {
     console.log('Creator ID:', creatorId);
     
     try {
-      const { data, error } = await supabase
-        .from('match_requests')
-        .select(`
-          match_id,
-          matches!inner(creator_id)
-        `)
-        .eq('matches.creator_id', creatorId)
-        .eq('status', 'pending');
+      // Try filtering by creator_id first; if no results, fallback to creator_nickname
+      const { creatorNickname } = getCreatorInfo();
+      let data: any[] | null = null;
+      let error: any = null;
+
+      if (creatorId) {
+        const res = await supabase
+          .from('match_requests')
+          .select(`
+            match_id,
+            matches!inner(creator_id, creator_nickname)
+          `)
+          .eq('matches.creator_id', creatorId)
+          .eq('status', 'pending');
+        data = res.data as any[] | null;
+        error = res.error;
+      }
+
+      if (!error && (!data || data.length === 0) && creatorNickname) {
+        console.log('useRequestCounts: No counts by creator_id, fallback to creator_nickname:', creatorNickname);
+        const resByNick = await supabase
+          .from('match_requests')
+          .select(`
+            match_id,
+            matches!inner(creator_id, creator_nickname)
+          `)
+          .eq('matches.creator_nickname', creatorNickname)
+          .eq('status', 'pending');
+        data = resByNick.data as any[] | null;
+        error = resByNick.error;
+      }
       
       console.log('Request counts query result:', { data, error });
       
