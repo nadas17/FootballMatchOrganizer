@@ -6,6 +6,9 @@ import { MapPin, Clock, Users, Calendar, Bell, Map } from "lucide-react";
 import { MatchData } from "@/types/match";
 import LocationMap from "./LocationMap";
 import WeatherWidget from "./WeatherWidget";
+import { MatchComments } from "./MatchComments";
+import { MatchReactions } from "./MatchReactions";
+import { SocialShare } from "./SocialShare";
 
 interface MatchCardProps {
   match: MatchData;
@@ -16,16 +19,17 @@ interface MatchCardProps {
   isCreator?: boolean;
 }
 
-const MatchCard: React.FC<MatchCardProps> = ({ 
-  match, 
-  isNextMatch, 
-  onJoinClick, 
-  isArchived, 
+const MatchCard: React.FC<MatchCardProps> = ({
+  match,
+  isNextMatch,
+  onJoinClick,
+  isArchived,
   pendingRequestsCount = 0,
-  isCreator = false 
+  isCreator = false
 }) => {
   const [showParticipants, setShowParticipants] = useState(false);
   const [showMap, setShowMap] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   
   // Calculate actual player count from participants array
   const actualPlayerCount = match.participants.length;
@@ -297,10 +301,10 @@ const MatchCard: React.FC<MatchCardProps> = ({
             <div className="space-y-4">
               {/* Team A */}
               {renderTeamSection('A', teamAParticipants, 'text-red-400')}
-              
+
               {/* Team B */}
               {renderTeamSection('B', teamBParticipants, 'text-blue-400')}
-              
+
               {/* Unassigned Players */}
               {unassignedParticipants.length > 0 && (
                 <div>
@@ -310,7 +314,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
                   <div className="space-y-3">
                     {Object.entries(groupByPosition(unassignedParticipants)).map(([position, players]) => {
                       if (players.length === 0) return null;
-                      
+
                       return (
                         <div key={position}>
                           <h4 className={`font-semibold mb-2 flex items-center gap-2 ${getPositionColor(position).split(' ')[0]} text-xs sm:text-sm`}>
@@ -319,8 +323,8 @@ const MatchCard: React.FC<MatchCardProps> = ({
                           </h4>
                           <div className="grid gap-2">
                              {players.map((player) => (
-                               <div 
-                                 key={player.id} 
+                               <div
+                                 key={player.id}
                                  className={`text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border ${getPositionColor(position)} flex items-center justify-between`}
                                >
                                  <span>{player.participant_name}</span>
@@ -342,6 +346,48 @@ const MatchCard: React.FC<MatchCardProps> = ({
             </div>
           </div>
         )}
+
+        {/* Social Features Section */}
+        <div className="mt-4 space-y-4">
+          {/* Reactions and Share Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg bg-black/20 backdrop-blur-sm border border-white/10">
+            <MatchReactions matchId={match.id} matchTitle={match.title} />
+            <SocialShare
+              matchId={match.id}
+              matchTitle={match.title || 'Football Match'}
+              matchDate={match.match_date || ''}
+              matchTime={match.match_time || ''}
+              location={match.location}
+            />
+          </div>
+
+          {/* Comments Toggle Button */}
+          <Button
+            variant="ghost"
+            onClick={() => setShowComments(!showComments)}
+            className="text-white hover:bg-white/10 p-2 rounded-lg transition-all duration-300 w-full justify-center"
+          >
+            <span className="font-semibold text-white">
+              {showComments ? 'Hide Comments' : 'Show Comments'}
+            </span>
+            {showComments ? (
+              <svg className="w-4 h-4 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            )}
+          </Button>
+
+          {/* Comments Section */}
+          {showComments && (
+            <div className="mt-2">
+              <MatchComments matchId={match.id} matchTitle={match.title} />
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
