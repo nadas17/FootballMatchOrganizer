@@ -10,6 +10,7 @@ import FluidGlassNav from "./components/FluidGlassNav";
 const Index = lazy(() => import("./pages/Index"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Matches = lazy(() => import("./pages/Matches"));
+const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading fallback
@@ -44,6 +45,7 @@ const App: React.FC = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/matches" element={<Matches />} />
+                  <Route path="/leaderboard" element={<Leaderboard />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>

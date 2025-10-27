@@ -6,8 +6,9 @@ export default function FluidGlassNav() {
 
   const navItems = [
     { label: "Home", link: "/" },
-    { label: "Profile", link: "/profile" },
     { label: "Matches", link: "/matches" },
+    { label: "Rankings", link: "/leaderboard" },
+    { label: "Profile", link: "/profile" },
   ];
 
   const isActive = (link: string) => {

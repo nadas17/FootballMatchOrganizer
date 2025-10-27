@@ -5,6 +5,8 @@ import ProfileForm from '../components/ProfileForm';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
 import RequestsPanel from '../components/RequestsPanel';
+import { PlayerStatistics } from '../components/PlayerStatistics';
+import { PlayerAchievements } from '../components/PlayerAchievements';
 import type { Profile } from '../types/profile';
 
 const ProfilePage = () => {
@@ -307,7 +309,7 @@ const ProfilePage = () => {
                     stars={profile.stars || 0}
                   />
                 </div>
-                <button 
+                <button
                   onClick={() => setEditing(true)}
                   className="w-full glass-button-primary py-2.5 sm:py-3 text-sm sm:text-base rounded-xl font-semibold transition-smooth"
                 >
@@ -316,6 +318,18 @@ const ProfilePage = () => {
                   </svg>
                   Edit Profile
                 </button>
+
+                {/* Player Statistics */}
+                <PlayerStatistics
+                  username={profile.username}
+                  userId={user.id}
+                />
+
+                {/* Player Achievements */}
+                <PlayerAchievements
+                  username={profile.username}
+                  userId={user.id}
+                />
               </>
             ) : (
               <div className="glass-card p-4 sm:p-8 text-center rounded-xl">
