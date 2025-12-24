@@ -14,7 +14,166 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      match_participants: {
+        Row: {
+          created_at: string
+          id: string
+          match_id: string
+          participant_name: string
+          position: string | null
+          team: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          match_id: string
+          participant_name: string
+          position?: string | null
+          team?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          match_id?: string
+          participant_name?: string
+          position?: string | null
+          team?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_participants_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_requests: {
+        Row: {
+          created_at: string
+          id: string
+          match_id: string
+          participant_name: string
+          position: string | null
+          status: string
+          team: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          match_id: string
+          participant_name: string
+          position?: string | null
+          status?: string
+          team?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          match_id?: string
+          participant_name?: string
+          position?: string | null
+          status?: string
+          team?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_requests_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      matches: {
+        Row: {
+          created_at: string
+          creator_id: string | null
+          creator_nickname: string | null
+          current_players: number
+          description: string | null
+          id: string
+          location: string
+          location_lat: number | null
+          location_lng: number | null
+          match_date: string
+          match_time: string
+          max_players: number
+          price_per_player: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id?: string | null
+          creator_nickname?: string | null
+          current_players?: number
+          description?: string | null
+          id?: string
+          location: string
+          location_lat?: number | null
+          location_lng?: number | null
+          match_date: string
+          match_time: string
+          max_players?: number
+          price_per_player?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string | null
+          creator_nickname?: string | null
+          current_players?: number
+          description?: string | null
+          id?: string
+          location?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          match_date?: string
+          match_time?: string
+          max_players?: number
+          price_per_player?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          position: string | null
+          stars: number | null
+          updated_at: string
+          user_id: string | null
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          position?: string | null
+          stars?: number | null
+          updated_at?: string
+          user_id?: string | null
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          position?: string | null
+          stars?: number | null
+          updated_at?: string
+          user_id?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
