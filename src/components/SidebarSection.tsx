@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import CountdownTimer from "@/components/CountdownTimer";
 import RequestsPanel from "@/components/RequestsPanel";
 import WeatherWidget from "@/components/WeatherWidget";
+import { Leaderboard } from "@/components/Leaderboard";
+import { ActivityFeed } from "@/components/ActivityFeed";
 import { MatchData } from "@/types/match";
 
 interface SidebarSectionProps {
@@ -45,6 +47,16 @@ const SidebarSection = memo(({ nextMatch, creatorId }: SidebarSectionProps) => {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Top Players Leaderboard */}
+      <div className="animate-fade-in" style={{ animationDelay: '450ms' }}>
+        <Leaderboard limit={5} showFullPage={false} />
+      </div>
+
+      {/* Recent Activity Feed */}
+      <div className="animate-fade-in" style={{ animationDelay: '500ms' }}>
+        <ActivityFeed limit={10} />
       </div>
     </div>
   );
